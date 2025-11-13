@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, Home, Clock, ChevronRight, Menu, X } from 'lucide-react';
+import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, Clock, ChevronRight, Menu, X } from 'lucide-react';
 
 interface LinkButtonProps {
   themeId: string;
@@ -252,16 +252,13 @@ export default function App() {
               <h2 className="text-2xl font-bold text-gray-800 mb-4">{section.title}</h2>
               <p className="text-gray-700 mb-4 leading-relaxed">{section.content}</p>
               <div className="flex flex-wrap gap-3">
-                {section.links.map((linkId: string, linkIdx: number) => {
-                  const theme = themes.find(t => t.id === linkId);
-                  return (
-                    <LinkButton
-                      key={linkIdx}
-                      themeId={linkId}
-                      text={`Saiba mais: ${themeContent[linkId]?.name || 'Desconhecido'}`}
-                    />
-                  );
-                })}
+                {section.links.map((linkId: string, linkIdx: number) => (
+                  <LinkButton
+                    key={linkIdx}
+                    themeId={linkId}
+                    text={`Saiba mais: ${themeContent[linkId]?.name || 'Desconhecido'}`}
+                  />
+                ))}
               </div>
             </div>
           ))}
