@@ -1,10 +1,39 @@
 import React, { useState } from 'react';
 import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, Home, Clock, ChevronRight, Menu, X } from 'lucide-react';
 
+interface LinkButtonProps {
+  themeId: string;
+  text: string;
+}
+
+interface Section {
+  title: string;
+  content: string;
+  links: string[];
+  subtitle?: string;
+  text?: string;
+}
+
+interface AgeContent {
+  [key: string]: {
+    title: string;
+    sections: Section[];
+  };
+}
+
+interface ThemeContent {
+  [key: string]: {
+    name: string;
+    title?: string;
+    icon?: React.FC<{ className?: string }>;
+    sections?: Section[];
+  };
+}
+
 export default function ProjetoAninhar() {
-  const [currentView, setCurrentView] = useState('home');
-  const [selectedAge, setSelectedAge] = useState(null);
-  const [selectedTheme, setSelectedTheme] = useState(null);
+  const [currentView, setCurrentView] = useState<'home' | 'age' | 'theme'>('home');
+  const [selectedAge, setSelectedAge] = useState<string | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const ages = [
@@ -24,7 +53,7 @@ export default function ProjetoAninhar() {
     { id: 'pais', name: 'Cuidando dos Pais', icon: Users, color: 'text-purple-600' }
   ];
 
-  const ageContent = {
+  const ageContent: AgeContent = {
     'newborn': {
       title: 'Recém-Nascido (0-28 dias)',
       sections: [
@@ -107,77 +136,16 @@ export default function ProjetoAninhar() {
     }
   };
 
-  const themeContent = {
-    'amamentacao': {
-      title: 'Amamentação',
-      icon: Heart,
-      sections: [
-        { subtitle: 'Benefícios', text: 'O leite materno é o alimento ideal, protege contra infecções, fortalece o vínculo e está sempre na temperatura perfeita.' },
-        { subtitle: 'Pega Correta', text: 'O bebê deve abocanhar não só o mamilo, mas também boa parte da aréola. A boca fica bem aberta, lábios virados para fora.' },
-        { subtitle: 'Livre Demanda', text: 'Amamente sempre que o bebê demonstrar sinais de fome, sem horários rígidos, especialmente nos primeiros meses.' },
-        { subtitle: 'Dificuldades Comuns', text: 'Fissuras, ingurgitamento, mastite. Procure ajuda de consultora de amamentação se necessário.' }
-      ]
-    },
-    'alimentacao': {
-      title: 'Introdução Alimentar',
-      icon: Utensils,
-      sections: [
-        { subtitle: 'Sinais de Prontidão (6 meses)', text: 'Sentar com apoio mínimo, levar objetos à boca, interesse pela comida, perdeu reflexo de protrusão da língua.' },
-        { subtitle: 'Método Tradicional', text: 'Papinhas amassadas, oferecendo diferentes texturas gradualmente. Inicia com consistência mais líquida.' },
-        { subtitle: 'BLW (Baby-Led Weaning)', text: 'Bebê se alimenta sozinho com alimentos em pedaços, explorando texturas, sabores e desenvolvendo autonomia.' },
-        { subtitle: 'Cortes Seguros', text: 'Evite alimentos redondos e duros. Corte uvas ao meio no comprimento, cenoura cozida em palitos, evite pipoca e amendoim inteiro.' },
-        { subtitle: 'Alergias Alimentares', text: 'Principais alérgenos: leite de vaca, ovo, trigo, soja, amendoim, castanhas, peixe, frutos do mar. Introduza um de cada vez.' }
-      ]
-    },
-    'sono': {
-      title: 'Sono',
-      icon: Moon,
-      sections: [
-        { subtitle: 'Ambiente Seguro', text: 'Berço vazio (sem travesseiros, cobertores soltos), de barriga para cima, colchão firme. Previne SMSL.' },
-        { subtitle: 'Rituais de Sono', text: 'Sequência previsível: banho, massagem, história, canção. Ajuda o bebê a reconhecer que é hora de dormir.' },
-        { subtitle: 'Regressões de Sono', text: 'Comuns aos 4, 8 e 18 meses, relacionadas a saltos de desenvolvimento. São temporárias, mantenha rotina.' },
-        { subtitle: 'Sonecas', text: 'Fundamentais para o sono noturno. Bebês muito cansados dormem pior à noite.' },
-        { subtitle: 'Ruído Branco', text: 'Pode ajudar a mascarar sons externos e acalmar o bebê, lembrando o útero materno.' }
-      ]
-    },
-    'desenvolvimento': {
-      title: 'Desenvolvimento',
-      icon: Baby,
-      sections: [
-        { subtitle: 'Motor', text: 'Controle da cabeça → rolar → sentar → engatinhar → ficar em pé → andar. Cada bebê tem seu ritmo.' },
-        { subtitle: 'Cognitivo', text: 'Permanência do objeto (8-12 meses), causa e efeito, resolução de problemas simples.' },
-        { subtitle: 'Linguagem', text: 'Balbucio → primeiras palavras (12 meses) → explosão vocabular (18-24 meses) → frases simples.' },
-        { subtitle: 'Social/Afetivo', text: 'Sorriso social, angústia da separação (8-12 meses), brincadeiras paralelas, descoberta da autonomia.' },
-        { subtitle: 'Sinais de Alerta', text: 'Ausência de sorriso social aos 3 meses, não sustenta cabeça aos 4 meses, não senta aos 9 meses, não anda aos 18 meses.' },
-        { subtitle: 'Estímulo', text: 'Brinque com objetos do dia a dia, converse, cante, leia livros, permita exploração segura do ambiente.' }
-      ]
-    },
-    'saude': {
-      title: 'Saúde e Doenças Comuns',
-      icon: Stethoscope,
-      sections: [
-        { subtitle: 'Febre', text: 'Acima de 37,8°C axilar. Em menores de 3 meses, procure médico imediatamente. Ofereça líquidos.' },
-        { subtitle: 'Cólicas', text: 'Comuns até 3-4 meses. Massagens, compressa morna, colo. Geralmente melhoram com maturação intestinal.' },
-        { subtitle: 'Refluxo', text: 'Comum em bebês. Se ganhar peso bem, é fisiológico. Atenção a sinais de desconforto excessivo.' },
-        { subtitle: 'Assaduras', text: 'Troque fraldas frequentemente, use pomada barreira, deixe o bumbum arejado quando possível.' },
-        { subtitle: 'Engasgo - Primeiros Socorros', text: 'Menores de 1 ano: 5 tapas nas costas + 5 compressões torácicas. Maiores de 1 ano: Manobra de Heimlich.' },
-        { subtitle: 'Quando ir à Emergência', text: 'Febre em menor de 3 meses, dificuldade respiratória, letargia, vômitos persistentes, desidratação, convulsões.' }
-      ]
-    },
-    'pais': {
-      title: 'Cuidando dos Pais',
-      icon: Users,
-      sections: [
-        { subtitle: 'Baby Blues vs Depressão Pós-Parto', text: 'Baby blues: primeiros 15 dias, choro fácil, melhora sozinho. DPP: após 2 semanas, tristeza profunda, necessita tratamento.' },
-        { subtitle: 'Rede de Apoio', text: 'Aceite ajuda. Não hesite em pedir. Conecte-se com outros pais. Você não precisa fazer tudo sozinho.' },
-        { subtitle: 'Relacionamento do Casal', text: 'Comuniquem-se, dividam tarefas, reservem momentos a dois (mesmo em casa), sejam pacientes.' },
-        { subtitle: 'Autocuidado', text: 'Reserve tempo para si, mesmo que 10 minutos. Durma quando o bebê dorme. Cuide da sua saúde física e mental.' },
-        { subtitle: 'Saúde Mental', text: 'Ansiedade e depressão são comuns. Não tenha vergonha de buscar ajuda profissional. Você merece apoio.' }
-      ]
-    }
+  const themeContent: ThemeContent = {
+    amamentacao: { name: 'Amamentação', title: 'Amamentação' },
+    alimentacao: { name: 'Introdução Alimentar', title: 'Introdução Alimentar' },
+    sono: { name: 'Sono', title: 'Sono' },
+    desenvolvimento: { name: 'Desenvolvimento', title: 'Desenvolvimento' },
+    saude: { name: 'Saúde e Doenças Comuns', title: 'Saúde e Doenças Comuns' },
+    pais: { name: 'Cuidando dos Pais', title: 'Cuidando dos Pais' }
   };
 
-  const LinkButton = ({ themeId, text }) => (
+  const LinkButton: React.FC<LinkButtonProps> = ({ themeId, text }) => (
     <button
       onClick={() => {
         setCurrentView('theme');
@@ -261,7 +229,8 @@ export default function ProjetoAninhar() {
   );
 
   const renderAgeView = () => {
-    const content = ageContent[selectedAge];
+    const content = selectedAge ? ageContent[selectedAge] : undefined;
+
     return (
       <div className="max-w-4xl mx-auto">
         <button
@@ -273,23 +242,23 @@ export default function ProjetoAninhar() {
         </button>
         
         <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">{content.title}</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">{content?.title}</h1>
           <p className="text-gray-600">Informações essenciais para esta fase</p>
         </div>
 
         <div className="space-y-8">
-          {content.sections.map((section, idx) => (
+          {content?.sections.map((section, idx) => (
             <div key={idx} className="bg-white p-6 rounded-2xl shadow-md border-2 border-gray-100">
               <h2 className="text-2xl font-bold text-gray-800 mb-4">{section.title}</h2>
               <p className="text-gray-700 mb-4 leading-relaxed">{section.content}</p>
               <div className="flex flex-wrap gap-3">
-                {section.links.map(linkId => {
+                {section.links.map((linkId: string, linkIdx: number) => {
                   const theme = themes.find(t => t.id === linkId);
                   return (
                     <LinkButton
-                      key={linkId}
+                      key={linkIdx}
                       themeId={linkId}
-                      text={`Saiba mais: ${theme.name}`}
+                      text={`Saiba mais: ${themeContent[linkId]?.name || 'Desconhecido'}`}
                     />
                   );
                 })}
@@ -302,8 +271,8 @@ export default function ProjetoAninhar() {
   };
 
   const renderThemeView = () => {
-    const content = themeContent[selectedTheme];
-    const Icon = content.icon;
+    const content = selectedTheme ? themeContent[selectedTheme] : undefined;
+    const Icon = content?.icon;
     
     return (
       <div className="max-w-4xl mx-auto">
@@ -316,13 +285,13 @@ export default function ProjetoAninhar() {
         </button>
         
         <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8 text-center">
-          <Icon className="w-16 h-16 mx-auto mb-4 text-rose-400" />
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">{content.title}</h1>
+          {Icon && <Icon className="w-16 h-16 mx-auto mb-4 text-rose-400" />}
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">{content?.title}</h1>
           <p className="text-gray-600">Guia completo sobre o tema</p>
         </div>
 
         <div className="space-y-6">
-          {content.sections.map((section, idx) => (
+          {content?.sections && content.sections.length > 0 && content.sections.map((section, idx) => (
             <div key={idx} className="bg-white p-6 rounded-2xl shadow-md border-2 border-gray-100">
               <h3 className="text-xl font-bold text-gray-800 mb-3">{section.subtitle}</h3>
               <p className="text-gray-700 leading-relaxed">{section.text}</p>
@@ -353,59 +322,37 @@ export default function ProjetoAninhar() {
     );
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-amber-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50 border-b border-rose-100">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <button 
-              onClick={() => setCurrentView('home')}
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-            >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-200 to-amber-200 flex items-center justify-center">
-                <Heart className="w-6 h-6 text-rose-400" />
-              </div>
-              <div className="text-left">
-                <h1 className="text-xl font-bold text-gray-800">PROJETO</h1>
-                <p className="text-lg text-rose-400 font-semibold -mt-1">ANINHAR</p>
-              </div>
-            </button>
-            
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg hover:bg-rose-50"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-
-            <nav className="hidden lg:flex items-center space-x-6">
-              <button
-                onClick={() => setCurrentView('home')}
-                className="flex items-center space-x-2 text-gray-700 hover:text-rose-600 font-medium transition-colors"
-              >
-                <Home className="w-5 h-5" />
-                <span>Início</span>
-              </button>
-            </nav>
-          </div>
-
-          {/* Mobile menu */}
-          {mobileMenuOpen && (
-            <nav className="lg:hidden mt-4 pb-4">
-              <button
-                onClick={() => {
-                  setCurrentView('home');
-                  setMobileMenuOpen(false);
-                }}
-                className="flex items-center space-x-2 text-gray-700 hover:text-rose-600 font-medium transition-colors w-full py-2"
-              >
-                <Home className="w-5 h-5" />
-                <span>Início</span>
-              </button>
-            </nav>
-          )}
+      <header className="bg-white shadow-md">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold">Projeto Aninhar</h1>
+          <button
+            className="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            onClick={toggleMobileMenu}
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+          <nav className="hidden lg:flex space-x-4">
+            <a href="#" className="text-gray-700 hover:text-indigo-500">Home</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-500">Sobre</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-500">Contato</a>
+          </nav>
         </div>
+        {mobileMenuOpen && (
+          <nav className="lg:hidden bg-white shadow-md">
+            <ul className="space-y-2 p-4">
+              <li><a href="#" className="block text-gray-700 hover:text-indigo-500">Home</a></li>
+              <li><a href="#" className="block text-gray-700 hover:text-indigo-500">Sobre</a></li>
+              <li><a href="#" className="block text-gray-700 hover:text-indigo-500">Contato</a></li>
+            </ul>
+          </nav>
+        )}
       </header>
 
       {/* Main Content */}

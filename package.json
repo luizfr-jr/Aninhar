@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "lucide-react": "^0.553.0",
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.4"
+  },
+  "scripts": {
+    "build": "echo 'Building the project...'",
+    "start": "echo 'Starting the project...'"
+  }
+}
