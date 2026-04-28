@@ -417,12 +417,11 @@ export default function App() {
   return (
     <div className="min-h-screen bg-stone-50">
       <header className="bg-white shadow-md border-b-4 border-rose-400">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <button onClick={() => navTo('home')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="flex flex-col leading-tight">
-              <span className="text-xl font-bold text-rose-500">Aninhar</span>
-              <span className="text-xs text-gray-400 font-medium">NinMa Hub · UFN</span>
-            </div>
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <button onClick={() => navTo('home')} className="flex items-center gap-4 hover:opacity-80 transition-opacity">
+            <img src="/PPGSMI-logo.png" alt="PPGSMI" className="h-14 w-auto" />
+            <div className="hidden sm:block w-px h-10 bg-gray-200" />
+            <img src="/ninmahub-logo.png" alt="NinMa Hub" className="hidden sm:block h-12 w-auto" />
           </button>
           <button
             className="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-200"
