@@ -550,28 +550,9 @@ export default function App() {
         <div className="container mx-auto px-4 py-10">
           {/* Logos */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-10 mb-8">
-            {/* NinMa Hub Logo */}
-            <div className="flex items-center gap-3">
-              <div className="flex flex-col items-start">
-                <div className="flex items-end gap-1 leading-none">
-                  <span className="text-3xl font-bold" style={{color:'#7B68C8'}}>nin</span>
-                  <span className="text-3xl font-bold" style={{color:'#7B68C8'}}>Ma</span>
-                  <span className="text-3xl font-bold text-gray-700 ml-1">hub</span>
-                </div>
-                <div className="text-xs text-gray-500 mt-0.5">
-                  <span>Núcleo de Inovação </span>
-                  <span className="font-bold text-gray-600">Materno Infantil UFN</span>
-                </div>
-              </div>
-            </div>
+            <img src="/ninmahub-logo.svg" alt="NinMa Hub" className="h-16 w-auto" />
             <div className="hidden md:block w-px h-12 bg-gray-200" />
-            {/* Oryum Tech Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">O</span>
-              </div>
-              <span className="text-2xl font-bold tracking-widest text-gray-700">ORYUM TECH</span>
-            </div>
+            <img src="/oryum-logo.svg" alt="Oryum Tech" className="h-12 w-auto" />
           </div>
 
           {/* Credits */}

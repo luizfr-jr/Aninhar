@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80" width="340" height="80">
+  <defs>
+    <linearGradient id="oryumGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#4A90D9"/>
+      <stop offset="50%"  stop-color="#6B5FCF"/>
+      <stop offset="100%" stop-color="#8B3FC8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon: two interlocking S-curves in a circle -->
+  <circle cx="40" cy="40" r="36" fill="url(#oryumGrad)" opacity="0.15"/>
+  <!-- Outer S shape -->
+  <path d="M28 18 C18 18 14 28 20 34 C26 40 46 40 52 46 C58 52 54 62 44 62"
+    stroke="url(#oryumGrad)" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <!-- Inner S shape (mirrored) -->
+  <path d="M52 18 C62 18 66 28 60 34 C54 40 34 40 28 46 C22 52 26 62 36 62"
+    stroke="#6B5FCF" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+
+  <!-- "ORYUM TECH" text -->
+  <text x="88" y="52"
+    font-family="'Helvetica Neue', Arial, sans-serif"
+    font-size="32" font-weight="700" fill="#2D2D2D" letter-spacing="4">ORYUM TECH</text>
+</svg>

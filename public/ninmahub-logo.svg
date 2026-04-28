@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 130" width="420" height="130">
+  <!-- Arc of dots: green → orange → red/pink -->
+  <!-- Green dots (bottom-left, larger) -->
+  <circle cx="22"  cy="108" r="11" fill="#5BB89A"/>
+  <circle cx="42"  cy="88"  r="10" fill="#5BB89A"/>
+  <circle cx="60"  cy="67"  r="9"  fill="#5BB89A"/>
+  <!-- Orange dots (middle arc) -->
+  <circle cx="76"  cy="48"  r="9"  fill="#F5A742"/>
+  <circle cx="96"  cy="32"  r="9"  fill="#F5A742"/>
+  <circle cx="118" cy="20"  r="8"  fill="#F5A742"/>
+  <circle cx="141" cy="13"  r="8"  fill="#F5A742"/>
+  <circle cx="165" cy="10"  r="8"  fill="#F5A742"/>
+  <circle cx="188" cy="13"  r="7"  fill="#F5A742"/>
+  <!-- Red/pink dot (top-right peak) -->
+  <circle cx="210" cy="22"  r="9"  fill="#E84E5C"/>
+
+  <!-- "ninMa" text -->
+  <text x="228" y="68"
+    font-family="'Arial Rounded MT Bold', 'Nunito', Arial, sans-serif"
+    font-size="50" font-weight="800" fill="#7B68C8" letter-spacing="-1">ninMa</text>
+
+  <!-- "hub" text -->
+  <text x="228" y="108"
+    font-family="'Arial Rounded MT Bold', 'Nunito', Arial, sans-serif"
+    font-size="40" font-weight="800" fill="#5A5278" letter-spacing="-1">hub</text>
+
+  <!-- Subtitle line 1 -->
+  <text x="228" y="122"
+    font-family="Arial, sans-serif"
+    font-size="11" fill="#888">Núcleo de Inovação  <tspan font-weight="bold" fill="#555">Materno Infantil UFN</tspan></text>
+</svg>
