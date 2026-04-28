@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, ChevronRight, Menu, X, Droplets, FileText, ClipboardList, AlertTriangle } from 'lucide-react';
+import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, ChevronRight, Menu, X, Droplets, FileText, ClipboardList, AlertTriangle, Search } from 'lucide-react';
 
 interface Section {
   title: string;
@@ -19,9 +19,10 @@ interface ThemeContent {
 }
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'theme' | 'about' | 'contact'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'theme' | 'about' | 'contact' | 'search'>('home');
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const themes = [
     { id: 'amamentacao', name: 'Amamentação', icon: Heart, color: 'text-violet-600' },
@@ -253,7 +254,90 @@ export default function App() {
     );
   };
 
-  const navTo = (view: 'home' | 'theme' | 'about' | 'contact') => {
+  const getSearchResults = (query: string) => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    const results: Array<{ themeId: string; themeName: string; subtitle: string; excerpt: string }> = [];
+    themes.forEach(theme => {
+      const content = themeContent[theme.id];
+      if (!content?.sections) return;
+      content.sections.forEach(section => {
+        const inSubtitle = section.subtitle?.toLowerCase().includes(q);
+        const inText = section.text?.toLowerCase().includes(q);
+        if (inSubtitle || inText) {
+          const text = section.text || '';
+          const idx = text.toLowerCase().indexOf(q);
+          const start = Math.max(0, idx - 50);
+          const end = Math.min(text.length, idx + q.length + 100);
+          const excerpt = (start > 0 ? '…' : '') + text.slice(start, end) + (end < text.length ? '…' : '');
+          results.push({ themeId: theme.id, themeName: theme.name, subtitle: section.subtitle || '', excerpt });
+        }
+      });
+    });
+    return results;
+  };
+
+  const highlight = (text: string, query: string) => {
+    if (!query.trim()) return text;
+    const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
+    return parts.map((part, i) =>
+      part.toLowerCase() === query.toLowerCase()
+        ? <mark key={i} className="bg-violet-100 text-violet-800 rounded px-0.5 not-italic">{part}</mark>
+        : part
+    );
+  };
+
+  const renderSearch = () => {
+    const results = getSearchResults(searchQuery);
+    return (
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
+          <Search className="w-12 h-12 mx-auto mb-4 text-violet-400" />
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">Buscar no Aninhar</h1>
+          <input
+            autoFocus
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Ex: pega, vacina, sono seguro..."
+            className="w-full px-5 py-3 text-lg border-2 border-violet-200 rounded-xl focus:outline-none focus:border-violet-400 bg-white shadow-sm"
+          />
+          {searchQuery.trim() && (
+            <p className="mt-3 text-sm text-gray-500">
+              {results.length === 0 ? 'Nenhum resultado encontrado.' : `${results.length} resultado${results.length > 1 ? 's' : ''} encontrado${results.length > 1 ? 's' : ''}.`}
+            </p>
+          )}
+        </div>
+
+        {results.length > 0 && (
+          <div className="space-y-4">
+            {results.map((r, idx) => (
+              <button
+                key={idx}
+                onClick={() => { setCurrentView('theme'); setSelectedTheme(r.themeId); window.scrollTo(0, 0); }}
+                className="w-full text-left bg-white p-5 rounded-2xl shadow-md border-2 border-gray-100 hover:border-violet-300 hover:shadow-lg transition-all"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-semibold text-violet-500 uppercase tracking-wide">{r.themeName}</span>
+                  <ChevronRight className="w-3 h-3 text-violet-400" />
+                  <span className="text-xs text-gray-400">{r.subtitle}</span>
+                </div>
+                <p className="text-sm text-gray-700 leading-relaxed">{highlight(r.excerpt, searchQuery)}</p>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {!searchQuery.trim() && (
+          <div className="text-center text-gray-400 mt-8">
+            <p className="text-sm">Digite um termo para pesquisar em todos os temas do Aninhar.</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const navTo = (view: 'home' | 'theme' | 'about' | 'contact' | 'search') => {
     setCurrentView(view);
     setMobileMenuOpen(false);
     window.scrollTo(0, 0);
@@ -346,10 +430,16 @@ export default function App() {
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
-          <nav className="hidden lg:flex space-x-6">
+          <nav className="hidden lg:flex items-center space-x-6">
             <button onClick={() => navTo('home')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Home</button>
             <button onClick={() => navTo('about')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Sobre</button>
             <button onClick={() => navTo('contact')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Contato</button>
+            <button
+              onClick={() => { setSearchQuery(''); navTo('search'); }}
+              className="flex items-center gap-1.5 px-4 py-2 bg-violet-50 hover:bg-violet-100 text-violet-600 font-medium rounded-lg transition-colors border border-violet-200"
+            >
+              <Search className="w-4 h-4" /> Buscar
+            </button>
           </nav>
         </div>
         {mobileMenuOpen && (
@@ -358,6 +448,7 @@ export default function App() {
               <li><button onClick={() => navTo('home')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Home</button></li>
               <li><button onClick={() => navTo('about')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Sobre</button></li>
               <li><button onClick={() => navTo('contact')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Contato</button></li>
+              <li><button onClick={() => { setSearchQuery(''); navTo('search'); }} className="flex items-center gap-2 w-full text-left px-2 py-2 text-violet-600 hover:text-violet-800 font-medium"><Search className="w-4 h-4" /> Buscar</button></li>
             </ul>
           </nav>
         )}
@@ -368,6 +459,7 @@ export default function App() {
         {currentView === 'theme' && renderThemeView()}
         {currentView === 'about' && renderAbout()}
         {currentView === 'contact' && renderContact()}
+        {currentView === 'search' && renderSearch()}
       </main>
 
       <footer className="bg-white border-t-4 border-violet-500 mt-16">
