@@ -25,7 +25,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const themes = [
-    { id: 'amamentacao', name: 'Amamentação', icon: Heart, color: 'text-violet-600' },
+    { id: 'amamentacao', name: 'Amamentação', icon: Heart, color: 'text-rose-500' },
     { id: 'alimentacao', name: 'Introdução Alimentar', icon: Utensils, color: 'text-amber-600' },
     { id: 'sono', name: 'Sono', icon: Moon, color: 'text-indigo-600' },
     { id: 'desenvolvimento', name: 'Desenvolvimento', icon: Baby, color: 'text-pink-600' },
@@ -186,7 +186,7 @@ export default function App() {
         <div className="w-40 h-40 mx-auto mb-6">
           <img src="/aninhar-logo.jpg" alt="Aninhar" className="w-full h-full object-contain" />
         </div>
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">Bem-vindo ao Aninhar</h1>
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">Bem-vindo</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Um ambiente acolhedor de informações para você cuidar do seu bebê com segurança e amor.
           Explore os temas abaixo para encontrar o que precisa.
@@ -196,7 +196,7 @@ export default function App() {
       {/* Navigation by Theme */}
       <div>
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center justify-center">
-          <Book className="w-8 h-8 mr-3 text-violet-500" />
+          <Book className="w-8 h-8 mr-3 text-rose-400" />
           Navegue por Tema
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -210,7 +210,7 @@ export default function App() {
                   setSelectedTheme(theme.id);
                   window.scrollTo(0, 0);
                 }}
-                className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all border-2 border-gray-100 hover:border-violet-300 transform hover:-translate-y-1"
+                className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all border-2 border-gray-100 hover:border-rose-200 transform hover:-translate-y-1"
               >
                 <Icon className={`w-12 h-12 mx-auto mb-4 ${theme.color}`} />
                 <h3 className="text-lg font-bold text-gray-800">{theme.name}</h3>
@@ -230,14 +230,14 @@ export default function App() {
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => setCurrentView('home')}
-          className="mb-6 flex items-center text-violet-600 hover:text-violet-800 font-medium"
+          className="mb-6 flex items-center text-rose-500 hover:text-rose-700 font-medium"
         >
           <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" />
           Voltar para início
         </button>
 
-        <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
-          {Icon && <Icon className="w-16 h-16 mx-auto mb-4 text-violet-400" />}
+        <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8 text-center">
+          {Icon && <Icon className="w-16 h-16 mx-auto mb-4 text-rose-400" />}
           <h1 className="text-3xl font-bold text-gray-800 mb-2">{content?.title}</h1>
           <p className="text-gray-600">Guia completo sobre o tema</p>
         </div>
@@ -282,7 +282,7 @@ export default function App() {
     const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
     return parts.map((part, i) =>
       part.toLowerCase() === query.toLowerCase()
-        ? <mark key={i} className="bg-violet-100 text-violet-800 rounded px-0.5 not-italic">{part}</mark>
+        ? <mark key={i} className="bg-rose-100 text-rose-700 rounded px-0.5 not-italic">{part}</mark>
         : part
     );
   };
@@ -291,8 +291,8 @@ export default function App() {
     const results = getSearchResults(searchQuery);
     return (
       <div className="max-w-3xl mx-auto">
-        <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
-          <Search className="w-12 h-12 mx-auto mb-4 text-violet-400" />
+        <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8 text-center">
+          <Search className="w-12 h-12 mx-auto mb-4 text-rose-400" />
           <h1 className="text-3xl font-bold text-gray-800 mb-6">Buscar no Aninhar</h1>
           <input
             autoFocus
@@ -300,7 +300,7 @@ export default function App() {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Ex: pega, vacina, sono seguro..."
-            className="w-full px-5 py-3 text-lg border-2 border-violet-200 rounded-xl focus:outline-none focus:border-violet-400 bg-white shadow-sm"
+            className="w-full px-5 py-3 text-lg border-2 border-rose-100 rounded-xl focus:outline-none focus:border-rose-400 bg-white shadow-sm"
           />
           {searchQuery.trim() && (
             <p className="mt-3 text-sm text-gray-500">
@@ -315,11 +315,11 @@ export default function App() {
               <button
                 key={idx}
                 onClick={() => { setCurrentView('theme'); setSelectedTheme(r.themeId); window.scrollTo(0, 0); }}
-                className="w-full text-left bg-white p-5 rounded-2xl shadow-md border-2 border-gray-100 hover:border-violet-300 hover:shadow-lg transition-all"
+                className="w-full text-left bg-white p-5 rounded-2xl shadow-md border-2 border-gray-100 hover:border-rose-200 hover:shadow-lg transition-all"
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-semibold text-violet-500 uppercase tracking-wide">{r.themeName}</span>
-                  <ChevronRight className="w-3 h-3 text-violet-400" />
+                  <span className="text-xs font-semibold text-rose-400 uppercase tracking-wide">{r.themeName}</span>
+                  <ChevronRight className="w-3 h-3 text-rose-400" />
                   <span className="text-xs text-gray-400">{r.subtitle}</span>
                 </div>
                 <p className="text-sm text-gray-700 leading-relaxed">{highlight(r.excerpt, searchQuery)}</p>
@@ -345,10 +345,10 @@ export default function App() {
 
   const renderAbout = () => (
     <div className="max-w-3xl mx-auto">
-      <button onClick={() => navTo('home')} className="mb-6 flex items-center text-violet-600 hover:text-violet-800 font-medium">
+      <button onClick={() => navTo('home')} className="mb-6 flex items-center text-rose-500 hover:text-rose-700 font-medium">
         <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" /> Voltar para início
       </button>
-      <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
+      <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8 text-center">
         <div className="w-24 h-24 mx-auto mb-4">
           <img src="/aninhar-logo.jpg" alt="Aninhar" className="w-full h-full object-contain" />
         </div>
@@ -372,7 +372,7 @@ export default function App() {
             <li>• <strong>Área de Dúvidas:</strong> Um canal dedicado onde você poderá retirar suas perguntas e buscar o amparo necessário.</li>
           </ul>
         </div>
-        <div className="bg-violet-50 p-6 rounded-2xl border-2 border-violet-100">
+        <div className="bg-rose-50 p-6 rounded-2xl border-2 border-rose-100">
           <h2 className="text-xl font-bold text-gray-800 mb-3">Aviso Importante</h2>
           <p className="text-gray-700 leading-relaxed">As informações do Aninhar têm caráter educativo e não substituem a avaliação de um profissional de saúde. Sempre consulte seu pediatra, médico ou outro profissional qualificado para orientações específicas sobre a saúde do seu filho.</p>
         </div>
@@ -382,10 +382,10 @@ export default function App() {
 
   const renderContact = () => (
     <div className="max-w-2xl mx-auto">
-      <button onClick={() => navTo('home')} className="mb-6 flex items-center text-violet-600 hover:text-violet-800 font-medium">
+      <button onClick={() => navTo('home')} className="mb-6 flex items-center text-rose-500 hover:text-rose-700 font-medium">
         <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" /> Voltar para início
       </button>
-      <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
+      <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Fale Conosco</h1>
         <p className="text-gray-600">Sugestões, dúvidas ou colaborações</p>
       </div>
@@ -395,17 +395,17 @@ export default function App() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-              <input type="text" placeholder="Seu nome" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-violet-300" />
+              <input type="text" placeholder="Seu nome" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-200" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-              <input type="email" placeholder="seu@email.com" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-violet-300" />
+              <input type="email" placeholder="seu@email.com" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-200" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Mensagem</label>
-              <textarea rows={4} placeholder="Como podemos ajudar?" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-violet-300 resize-none" />
+              <textarea rows={4} placeholder="Como podemos ajudar?" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-200 resize-none" />
             </div>
-            <button className="w-full bg-violet-500 hover:bg-violet-600 text-white font-bold py-3 rounded-lg transition-colors">
+            <button className="w-full bg-rose-400 hover:bg-rose-500 text-white font-bold py-3 rounded-lg transition-colors">
               Enviar Mensagem
             </button>
           </div>
@@ -415,28 +415,28 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-md border-b-4 border-violet-500">
+    <div className="min-h-screen bg-stone-50">
+      <header className="bg-white shadow-md border-b-4 border-rose-400">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <button onClick={() => navTo('home')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="flex flex-col leading-tight">
-              <span className="text-xl font-bold text-violet-600">Aninhar</span>
+              <span className="text-xl font-bold text-rose-500">Aninhar</span>
               <span className="text-xs text-gray-400 font-medium">NinMa Hub · UFN</span>
             </div>
           </button>
           <button
-            className="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-300"
+            className="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-200"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
           <nav className="hidden lg:flex items-center space-x-6">
-            <button onClick={() => navTo('home')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Home</button>
-            <button onClick={() => navTo('about')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Sobre</button>
-            <button onClick={() => navTo('contact')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Contato</button>
+            <button onClick={() => navTo('home')} className="text-gray-700 hover:text-rose-400 font-medium transition-colors">Home</button>
+            <button onClick={() => navTo('about')} className="text-gray-700 hover:text-rose-400 font-medium transition-colors">Sobre</button>
+            <button onClick={() => navTo('contact')} className="text-gray-700 hover:text-rose-400 font-medium transition-colors">Contato</button>
             <button
               onClick={() => { setSearchQuery(''); navTo('search'); }}
-              className="flex items-center gap-1.5 px-4 py-2 bg-violet-50 hover:bg-violet-100 text-violet-600 font-medium rounded-lg transition-colors border border-violet-200"
+              className="flex items-center gap-1.5 px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-500 font-medium rounded-lg transition-colors border border-rose-100"
             >
               <Search className="w-4 h-4" /> Buscar
             </button>
@@ -445,10 +445,10 @@ export default function App() {
         {mobileMenuOpen && (
           <nav className="lg:hidden bg-white border-t border-gray-100">
             <ul className="space-y-1 p-4">
-              <li><button onClick={() => navTo('home')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Home</button></li>
-              <li><button onClick={() => navTo('about')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Sobre</button></li>
-              <li><button onClick={() => navTo('contact')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Contato</button></li>
-              <li><button onClick={() => { setSearchQuery(''); navTo('search'); }} className="flex items-center gap-2 w-full text-left px-2 py-2 text-violet-600 hover:text-violet-800 font-medium"><Search className="w-4 h-4" /> Buscar</button></li>
+              <li><button onClick={() => navTo('home')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-rose-400 font-medium">Home</button></li>
+              <li><button onClick={() => navTo('about')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-rose-400 font-medium">Sobre</button></li>
+              <li><button onClick={() => navTo('contact')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-rose-400 font-medium">Contato</button></li>
+              <li><button onClick={() => { setSearchQuery(''); navTo('search'); }} className="flex items-center gap-2 w-full text-left px-2 py-2 text-rose-500 hover:text-rose-700 font-medium"><Search className="w-4 h-4" /> Buscar</button></li>
             </ul>
           </nav>
         )}
@@ -462,7 +462,7 @@ export default function App() {
         {currentView === 'search' && renderSearch()}
       </main>
 
-      <footer className="bg-white border-t-4 border-violet-500 mt-16">
+      <footer className="bg-white border-t-4 border-rose-400 mt-16">
         <div className="container mx-auto px-4 py-10">
           {/* Logos */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-10 mb-8">
@@ -473,7 +473,7 @@ export default function App() {
 
           {/* Credits */}
           <div className="text-center space-y-2 border-t border-gray-100 pt-6">
-            <p className="text-sm font-semibold text-violet-600">Aninhar — Cuidando com amor e informação</p>
+            <p className="text-sm font-semibold text-rose-500">Aninhar — Cuidando com amor e informação</p>
             <p className="text-xs text-gray-500">
               Desenvolvido por <span className="font-medium text-gray-700">Luiz Fernando Rodrigues Junior</span> e <span className="font-medium text-gray-700">Kalleby Evangelho Mota</span>
             </p>
