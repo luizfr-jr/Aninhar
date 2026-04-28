@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, Clock, ChevronRight, Menu, X } from 'lucide-react';
+import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, Clock, ChevronRight, Menu, X, Smile, AlertTriangle } from 'lucide-react';
 
 interface LinkButtonProps {
   themeId: string;
@@ -50,7 +50,9 @@ export default function App() {
     { id: 'desenvolvimento', name: 'Desenvolvimento', icon: Baby, color: 'text-pink-600' },
     { id: 'vacinas', name: 'Vacinas', icon: Shield, color: 'text-teal-600' },
     { id: 'saude', name: 'Saúde e Doenças', icon: Stethoscope, color: 'text-red-600' },
-    { id: 'pais', name: 'Cuidando dos Pais', icon: Users, color: 'text-purple-600' }
+    { id: 'pais', name: 'Cuidando dos Pais', icon: Users, color: 'text-purple-600' },
+    { id: 'higieneBucal', name: 'Higiene Bucal', icon: Smile, color: 'text-cyan-600' },
+    { id: 'acidentes', name: 'Prevenção de Acidentes', icon: AlertTriangle, color: 'text-orange-600' }
   ];
 
   const ageContent: AgeContent = {
@@ -142,9 +144,17 @@ export default function App() {
       sections: [
         { title: '', content: '', links: [], subtitle: 'O Início da Amamentação', text: 'O leite materno é o alimento mais completo para o bebê. Nos primeiros dias, o seio produz o colostro — rico em anticorpos. Inicie a amamentação na primeira hora de vida sempre que possível.' },
         { title: '', content: '', links: [], subtitle: 'Pega e Posicionamento', text: 'Uma boa pega evita dores e garante leite suficiente. O bebê deve abocanhar a aréola, não só o bico. Os lábios ficam virados para fora e o queixo toca o seio. O corpo do bebê deve estar alinhado e voltado para a mãe.' },
+        { title: '', content: '', links: [], subtitle: 'Posições de Amamentação', text: 'Posição cavaleiro: bebê sentado com as pernas abertas sobre sua coxa — ótima para bebês com refluxo. Posição invertida: a cabeça do bebê é apoiada com as mãos e as perninhas ficam por baixo da sua axila — indicada para bebês prematuros ou com dificuldade de pega. Posição deitada: mãe e bebê deitados de lado frente a frente — ideal para amamentações noturnas e pós-parto cesárea.' },
         { title: '', content: '', links: [], subtitle: 'Frequência e Duração', text: 'Nos primeiros meses, amamente em livre demanda: 8 a 12 vezes ao dia, a cada 2-3 horas. Deixe o bebê esvaziar um seio antes de oferecer o outro. Sinais de fome: levar as mãos à boca, fazer movimentos de sucção, agitação.' },
+        { title: '', content: '', links: [], subtitle: 'Como Saber se o Bebê Está Mamando Bem?', text: 'O bebê está mamando bem quando: mama em livre demanda (8 ou mais vezes por dia), ganha peso de forma adequada, urina várias vezes ao dia com urina clara, faz cocô pastoso e amarelado após as mamadas, demonstra estar satisfeito após mamar e dorme tranquilo. Choro frequente não significa, por si só, que o leite é insuficiente. Consultas regulares com o pediatra ajudam a acompanhar esse processo.' },
+        { title: '', content: '', links: [], subtitle: 'Almofada de Amamentação', text: 'Ajuda a manter a postura e colocar a criança na altura ideal, aumentando o conforto e auxiliando a posição adequada durante a mamada.' },
+        { title: '', content: '', links: [], subtitle: 'Sutiã de Amamentação', text: 'Escolha um sutiã confortável, sem compressão abaixo da borda. Sutiãs que tenham abertura pela frente facilitam a amamentação e o acesso rápido.' },
+        { title: '', content: '', links: [], subtitle: 'Bombas Extratoras', text: 'São um bom acessório para quando o leite precisa ser armazenado — como na volta ao trabalho. Pode ser manual ou elétrica: a melhor opção é a que você se adapta e se sente mais confortável.' },
+        { title: '', content: '', links: [], subtitle: 'Tipoias de Amamentação', text: 'Ajudam na sustentação de seios volumosos ou pesados. Permitem que a mãe mantenha as mãos livres, facilitando a pega e o posicionamento do bebê.' },
+        { title: '', content: '', links: [], subtitle: 'Rosquinhas de Amamentação', text: 'São rosquinhas feitas de tecido usadas dentro do sutiã/top. Auxiliam na prevenção de fissuras, pois garantem que o mamilo e a aréola fiquem suspensos e não em contato direto com o tecido, mantendo a região seca. Protegem mamilos machucados evitando atrito constante. IMPORTANTE: as rosquinhas podem ficar úmidas com o leite, por isso devem ser lavadas e trocadas com frequência.' },
+        { title: '', content: '', links: [], subtitle: 'Conchas e Absorventes (Atenção!)', text: 'Embora pareçam práticos, costumam deixar os mamilos úmidos, aumentando a chance de lesões e contaminação por bactérias e fungos. NÃO são recomendados — prefira as rosquinhas de amamentação.' },
         { title: '', content: '', links: [], subtitle: 'Desafios Comuns', text: 'Ingurgitamento, mastite e mamilos doloridos são frequentes. Na maioria dos casos, corrigir a pega resolve as dores. Para ingurgitamento, amamente com frequência. Em caso de mastite (seio vermelho, duro e febre), consulte um médico.' },
-        { title: '', content: '', links: [], subtitle: 'Por Quanto Tempo?', text: 'A OMS recomenda amamentação exclusiva até os 6 meses e complementar até os 2 anos ou mais. O desmame natural ocorre quando mãe e bebê estão prontos. Qualquer período de amamentação já traz benefícios importantes.' },
+        { title: '', content: '', links: [], subtitle: 'Por Quanto Tempo Amamentar?', text: 'A OMS recomenda amamentação exclusiva até os 6 meses e complementar até os 2 anos ou mais. O desmame natural ocorre quando mãe e bebê estão prontos. Qualquer período de amamentação já traz benefícios importantes.' },
       ]
     },
     alimentacao: {
@@ -195,6 +205,27 @@ export default function App() {
         { title: '', content: '', links: [], subtitle: 'Refluxo', text: 'Regurgitar é normal — o esfíncter esofágico ainda é imaturo. Torna-se patológico quando há choro intenso, recusa ao peito, arqueamento do corpo, tosse crônica ou ganho de peso insatisfatório. Nesses casos, consulte o pediatra.' },
         { title: '', content: '', links: [], subtitle: 'Resfriados e Gripes', text: 'Bebês podem ter 8-10 resfriados por ano. Alívio: soro fisiológico nasal, umidificador e hidratação. Não use descongestionantes ou xaropes sem prescrição. Em menores de 2 meses com febre ou dificuldade respiratória, vá ao pronto-socorro.' },
         { title: '', content: '', links: [], subtitle: 'Quando Ir ao Médico Imediatamente', text: 'Urgência: qualquer febre em menores de 3 meses, dificuldade respiratória, lábios azulados, convulsão, sonolência extrema, recusa total de alimento por 8h+, vômitos em jato repetidos, fezes com sangue ou sinais de desidratação.' },
+      ]
+    },
+    higieneBucal: {
+      name: 'Higiene Bucal', title: 'Higiene Bucal',
+      icon: Smile,
+      sections: [
+        { title: '', content: '', links: [], subtitle: 'Quando Começar a Higiene da Boca?', text: 'Desde a primeira pontinha de dente, devemos iniciar a escovação. Ela deve ser realizada com escova de dente macia ou extra macia, com cabeça pequena.' },
+        { title: '', content: '', links: [], subtitle: 'Qual Pasta de Dente Usar?', text: 'Deve ser utilizada pasta de dente com flúor, contendo pelo menos 1100 ppm de flúor — você encontra essa informação nos ingredientes do produto. A quantidade é de um grão de arroz.' },
+        { title: '', content: '', links: [], subtitle: 'Devo Usar Fio Dental?', text: 'A maioria dos bebês tem espaçamento entre os dentes, mas caso estejam muito juntos, você pode, gentilmente, passar fio dental entre eles.' },
+        { title: '', content: '', links: [], subtitle: 'Quantas Vezes ao Dia Escovar?', text: 'Pelo menos duas vezes ao dia: pela manhã e antes de dormir. Se possível, escove também após as refeições. A escovação deve ser realizada por um adulto.' },
+        { title: '', content: '', links: [], subtitle: 'Quando Procurar um Dentista?', text: 'Quando o seu bebê tiver os primeiros dentes, é recomendado marcar uma consulta com o dentista. O dentista irá recomendar dieta e práticas adequadas para uma saúde oral, além de ser importante para o bebê se acostumar com o ambiente do consultório odontológico.' },
+        { title: '', content: '', links: [], subtitle: 'Dica Extra: Alimentação e Saúde Bucal', text: 'Uma dieta saudável, variada e rica em nutrientes ajuda na formação dos dentes do seu bebê. Uma alimentação rica em alimentos processados e açúcares pode levar à obesidade, diabetes e cárie dentária.' },
+      ]
+    },
+    acidentes: {
+      name: 'Prevenção de Acidentes', title: 'Prevenção de Acidentes',
+      icon: AlertTriangle,
+      sections: [
+        { title: '', content: '', links: [], subtitle: 'Por que Prevenir Acidentes?', text: 'A chegada do bebê transforma a casa em um verdadeiro ninho, cheio de amor e aconchego. No entanto, é fundamental lembrar que mesmo nos primeiros meses de vida, a prevenção de acidentes é um ato contínuo de carinho e proteção. Acidentes domésticos são a principal causa de morte de crianças de 0 a 14 anos no Brasil, e muitos podem ser facilmente evitados com medidas simples e atenção redobrada.' },
+        { title: '', content: '', links: [], subtitle: 'Prevenindo Quedas', text: 'Nunca deixe o bebê sozinho em superfícies elevadas como trocadores, camas ou sofás — mesmo que ainda não role. Utilize grades de proteção em escadas e janelas. Prefira berços com grades altas e estáveis. Em carrinhos e cadeirinhas, sempre use o cinto de segurança. No chão, o bebê está mais seguro para brincar e se desenvolver.' },
+        { title: '', content: '', links: [], subtitle: 'Mais informações em breve', text: 'Esta seção será expandida com mais orientações sobre prevenção de afogamento, engasgos, queimaduras, intoxicações e segurança no trânsito assim que o restante do documento for disponibilizado.' },
       ]
     },
     pais: {
