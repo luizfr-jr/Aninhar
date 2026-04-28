@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, Clock, ChevronRight, Menu, X, Smile, AlertTriangle } from 'lucide-react';
+import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, Clock, ChevronRight, Menu, X, Droplets, FileText, ClipboardList, AlertTriangle } from 'lucide-react';
 
 interface LinkButtonProps {
   themeId: string;
@@ -51,8 +51,10 @@ export default function App() {
     { id: 'vacinas', name: 'Vacinas', icon: Shield, color: 'text-teal-600' },
     { id: 'saude', name: 'Saúde e Doenças', icon: Stethoscope, color: 'text-red-600' },
     { id: 'pais', name: 'Cuidando dos Pais', icon: Users, color: 'text-purple-600' },
-    { id: 'higieneBucal', name: 'Higiene Bucal', icon: Smile, color: 'text-cyan-600' },
-    { id: 'acidentes', name: 'Prevenção de Acidentes', icon: AlertTriangle, color: 'text-orange-600' }
+    { id: 'higiene', name: 'Higiene e Cuidados Diários', icon: Droplets, color: 'text-cyan-600' },
+    { id: 'acidentes', name: 'Segurança e Prevenção de Acidentes', icon: AlertTriangle, color: 'text-orange-600' },
+    { id: 'primeirosPassos', name: 'Primeiros Passos', icon: ClipboardList, color: 'text-emerald-600' },
+    { id: 'licencas', name: 'Licenças Maternidade e Paternidade', icon: FileText, color: 'text-blue-600' },
   ];
 
   const ageContent: AgeContent = {
@@ -171,7 +173,7 @@ export default function App() {
       name: 'Sono', title: 'Sono',
       sections: [
         { title: '', content: '', links: [], subtitle: 'Como é o Sono do Bebê', text: 'Os ciclos de sono do bebê duram ~45 min (vs. 90 min do adulto), com mais tempo em sono leve. Por isso acordam facilmente entre ciclos. Até os 4-6 meses, acordar para mamar à noite é fisiologicamente normal.' },
-        { title: '', content: '', links: [], subtitle: 'Ambiente Seguro para Dormir', text: 'Para prevenir a SMSL: coloque o bebê de costas em superfície firme, sem travesseiros, almofadas ou edredons. Temperatura ideal do quarto: 18-22°C. O cobicho pode ser usado sem cobertura sobre a cabeça.' },
+        { title: '', content: '', links: [], subtitle: 'Ambiente Seguro para Dormir', text: 'O bebê deve dormir no mesmo quarto dos pais, mas evite cama compartilhada. A posição correta é de barriga para cima — sempre. Cuide para que o rosto não seja encoberto por lençóis ou cobertores. Vestir o bebê com camadas de roupas é preferível ao uso de cobertas. Sacos de dormir vestíveis também podem ser usados — devem deixar cabeça e braços livres. Tudo que for macio ou solto é risco e deve ser removido: sem bichos de pelúcia, almofadas, travesseiros, protetores de berço ou edredons. Use lençóis de elástico presos ao colchão.' },
         { title: '', content: '', links: [], subtitle: 'Rotinas de Sono', text: 'Uma rotina previsível ajuda o bebê a entender que é hora de dormir: banho, massagem, amamentação, leitura e música calma. A consistência importa mais que a sequência. A partir dos 3-4 meses já é possível estabelecer uma rotina noturna.' },
         { title: '', content: '', links: [], subtitle: 'Regressões de Sono', text: 'Regressões são períodos de piora do sono associados a saltos de desenvolvimento. As mais comuns: 4 meses (mais intensa), 8-10 meses, 12 meses e 18 meses. São temporárias (2-6 semanas). Manter a rotina e oferecer mais acolhimento ajuda.' },
         { title: '', content: '', links: [], subtitle: 'Sonecas Diurnas', text: 'Recém-nascidos dormem 4-5 vezes ao dia; aos 6 meses, 2-3 sonecas; aos 12-18 meses, 1-2 sonecas. A última soneca deve terminar ao menos 2h antes de dormir à noite. Por volta dos 2-3 anos a maioria abandona as sonecas naturalmente.' },
@@ -207,25 +209,55 @@ export default function App() {
         { title: '', content: '', links: [], subtitle: 'Quando Ir ao Médico Imediatamente', text: 'Urgência: qualquer febre em menores de 3 meses, dificuldade respiratória, lábios azulados, convulsão, sonolência extrema, recusa total de alimento por 8h+, vômitos em jato repetidos, fezes com sangue ou sinais de desidratação.' },
       ]
     },
-    higieneBucal: {
-      name: 'Higiene Bucal', title: 'Higiene Bucal',
-      icon: Smile,
+    higiene: {
+      name: 'Higiene e Cuidados Diários', title: 'Higiene e Cuidados Diários',
+      icon: Droplets,
       sections: [
-        { title: '', content: '', links: [], subtitle: 'Quando Começar a Higiene da Boca?', text: 'Desde a primeira pontinha de dente, devemos iniciar a escovação. Ela deve ser realizada com escova de dente macia ou extra macia, com cabeça pequena.' },
-        { title: '', content: '', links: [], subtitle: 'Qual Pasta de Dente Usar?', text: 'Deve ser utilizada pasta de dente com flúor, contendo pelo menos 1100 ppm de flúor — você encontra essa informação nos ingredientes do produto. A quantidade é de um grão de arroz.' },
-        { title: '', content: '', links: [], subtitle: 'Devo Usar Fio Dental?', text: 'A maioria dos bebês tem espaçamento entre os dentes, mas caso estejam muito juntos, você pode, gentilmente, passar fio dental entre eles.' },
-        { title: '', content: '', links: [], subtitle: 'Quantas Vezes ao Dia Escovar?', text: 'Pelo menos duas vezes ao dia: pela manhã e antes de dormir. Se possível, escove também após as refeições. A escovação deve ser realizada por um adulto.' },
-        { title: '', content: '', links: [], subtitle: 'Quando Procurar um Dentista?', text: 'Quando o seu bebê tiver os primeiros dentes, é recomendado marcar uma consulta com o dentista. O dentista irá recomendar dieta e práticas adequadas para uma saúde oral, além de ser importante para o bebê se acostumar com o ambiente do consultório odontológico.' },
-        { title: '', content: '', links: [], subtitle: 'Dica Extra: Alimentação e Saúde Bucal', text: 'Uma dieta saudável, variada e rica em nutrientes ajuda na formação dos dentes do seu bebê. Uma alimentação rica em alimentos processados e açúcares pode levar à obesidade, diabetes e cárie dentária.' },
+        { title: '', content: '', links: [], subtitle: 'Banho do Bebê: Preparação e Segurança', text: 'Antes de começar, aqueça bem o ambiente — bebês perdem calor facilmente. Deixe tudo à mão: toalha, fralda limpa, roupinhas e produtos de higiene. Teste sempre a temperatura da água: deve estar entre 36,9°C e 37,5°C — use seu cotovelo ou um termômetro.' },
+        { title: '', content: '', links: [], subtitle: 'Banho do Bebê: O Momento do Banho', text: 'Para o banho de imersão, coloque o bebê na banheira com água até a cintura. Uma dica é colocá-lo enrolado na fraldinha e ir desenrolando devagar. Use apenas produtos suaves, hipoalergênicos e feitos para a pele do bebê. Para lavar o couro cabeludo, use a quantidade de um pequeno círculo (como uma moeda), faça movimentos suaves, enxágue bem e seque com toques suaves — nunca esfregue e jamais use secador.' },
+        { title: '', content: '', links: [], subtitle: 'Banho do Bebê: Cuidados Finais', text: 'Não se preocupe em retirar o vérnix (camadinha esbranquiçada) — ela hidrata, protege e será naturalmente reabsorvida. Ao tirar o bebê da água, seque com toques gentis usando toalha macia e bem seca. Crie um ambiente de carinho: coloque música calma e converse ou cante durante o banho.' },
+        { title: '', content: '', links: [], subtitle: 'Cuidados com o Coto Umbilical', text: 'Mantenha o coto limpo e seco. Não é necessário usar álcool ou nenhum produto — água limpa e secagem cuidadosa são suficientes na maioria dos casos. O coto cai sozinho entre 7 e 21 dias. Procure o pediatra se houver vermelhidão ao redor, cheiro forte, secreção ou sangramento.' },
+        { title: '', content: '', links: [], subtitle: 'Troca de Fraldas e Prevenção de Assaduras', text: 'Troque a fralda com frequência — ao menos a cada 2-3 horas ou sempre que estiver suja. Limpe de frente para trás com toalhinha umedecida sem perfume. Para prevenir assaduras: mantenha a área seca, use creme de barreira (óxido de zinco) em cada troca e deixe o bebê um tempo sem fralda ao dia. Assaduras persistentes ou com aspecto de candidíase (fungal) requerem tratamento específico.' },
+        { title: '', content: '', links: [], subtitle: 'Higiene das Unhas', text: 'As unhas do recém-nascido são finas e podem ser compridas ao nascer. Inicialmente, lixe com lixas suaves para bebês. Após, faça um corte reto com tesoura sem ponta. Higienize suas mãos e os materiais antes. Escolha um momento em que o bebê esteja calmo ou adormecido. Se cortar além do desejado, lave com sabão neutro e aplique leve pressão com gaze limpa. Unha encravada (bordas inflamadas): interrompa o corte e consulte o pediatra.' },
+        { title: '', content: '', links: [], subtitle: 'Higiene Oral: Antes dos Dentes', text: 'Antes dos primeiros dentes, não é necessário fazer higiene bucal especial — a gengiva se limpa naturalmente. Fique atento ao surgimento do primeiro dente para iniciar os cuidados.' },
+        { title: '', content: '', links: [], subtitle: 'Higiene Oral: Com os Primeiros Dentes', text: 'Desde a primeira pontinha de dente, inicie a escovação com escova macia ou extra macia, cabeça pequena. Use pasta com flúor (mínimo 1100 ppm — verifique nos ingredientes), na quantidade de um grão de arroz. Escove pelo menos 2x ao dia: manhã e antes de dormir. A escovação deve ser feita por um adulto. Fio dental: use se os dentes estiverem muito juntos.' },
+        { title: '', content: '', links: [], subtitle: 'Primeira Consulta com o Dentista', text: 'Quando surgirem os primeiros dentes, agende uma consulta com odontopediatra. O dentista recomendará dieta e práticas adequadas para a saúde oral e é importante o bebê se familiarizar com o ambiente odontológico. Dica: uma alimentação saudável e rica em nutrientes ajuda na formação dos dentes — evite açúcar e ultraprocessados.' },
+      ]
+    },
+    primeirosPassos: {
+      name: 'Primeiros Passos', title: 'Primeiros Passos — Guia do Recém-Nascido',
+      icon: ClipboardList,
+      sections: [
+        { title: '', content: '', links: [], subtitle: 'Compromissos da Primeira Semana', text: 'Após a alta hospitalar, é fundamental garantir que o bebê receba os cuidados médicos necessários. Siga todas as recomendações do hospital e do pediatra. Os principais compromissos são: realizar as vacinas iniciais (Hepatite B e BCG), fazer o Teste do Pezinho entre o 3° e 5° dia de vida e agendar a primeira consulta pediátrica nos primeiros 7 dias de vida.' },
+        { title: '', content: '', links: [], subtitle: 'Primeiras Vacinas: Hepatite B e BCG', text: 'Durante a internação em hospitais SUS, o recém-nascido normalmente recebe as primeiras vacinas antes da alta. Caso não tenha recebido, a vacina contra Hepatite B (protege o fígado) e a vacina BCG (protege contra formas graves de tuberculose) devem ser realizadas o quanto antes no posto de saúde, de forma gratuita.' },
+        { title: '', content: '', links: [], subtitle: 'Testes de Triagem Neonatal', text: 'Teste do Pezinho: realizado entre o 3° e 5° dia de vida, detecta doenças como fenilcetonúria, hipotireoidismo e fibrose cística. Pelo SUS é gratuito; na rede privada inclui 100 a 200+ doenças. Teste da Orelhinha: avalia a audição, deve ser feito antes de 1 mês. Teste do Olhinho: detecta patologias oculares. Teste do Coraçãozinho: detecta doenças cardíacas. Teste da Linguinha: diagnostica anquiloglossia (língua presa).' },
+        { title: '', content: '', links: [], subtitle: 'Primeira Consulta Pediátrica', text: 'É altamente recomendada nos primeiros 7 dias de vida. O pediatra avaliará: ganho de peso, icterícia (pele amarelada), reflexo de sucção, condições da pele e do cordão umbilical, e iniciará suplementações necessárias. É também o momento ideal para os pais tirarem dúvidas sobre amamentação e cuidados com o bebê.' },
+        { title: '', content: '', links: [], subtitle: 'Certidão de Nascimento', text: 'Registrar o bebê é exigência legal e garante à criança acesso à saúde, educação e benefícios sociais. O registro pode ser feito no cartório de registro civil ou no próprio hospital/maternidade. Prazo: até 15 dias após o nascimento (pode ser prorrogado para 45 dias ou 3 meses em locais distantes). Documentos: Declaração de Nascido Vivo (DNV), RG ou CNH dos pais e certidão de casamento. O primeiro registro e a primeira via são totalmente gratuitos.' },
+        { title: '', content: '', links: [], subtitle: 'Sinais de Alerta no Recém-Nascido', text: 'Procure ajuda imediatamente se o bebê apresentar: gemido persistente ao respirar, parada de respiração por mais de 20 segundos, respiração difícil ou pele azulada (cianose), febre acima de 37,5-38°C ou temperatura abaixo de 36°C, palidez intensa ou pele marmorizada, dificuldade para mamar ou sonolência excessiva, choro incomum ou difícil de consolar, convulsões (olhar parado, tremores), cheiro forte no umbigo com vermelhidão ou secreção, diarreia ou ausência de evacuação por mais de 3 dias.' },
+        { title: '', content: '', links: [], subtitle: 'Cuidados com a Mãe no Pós-Parto', text: 'O puerpério é uma jornada de recuperação. Procure orientação médica imediatamente se notar: febre (≥37,8°C), sangramento excessivo ou com coágulos grandes, dores fortes e persistentes, falta de ar ou palpitações, inchaço excessivo nas pernas/tornozelos/rosto, sintomas depressivos (tristeza profunda, desinteresse, pensamentos negativos). No pós-parto vaginal, atenção à cicatrização do períneo. Na cesárea, observe a incisão. Mamas avermelhadas, endurecidas e com febre podem indicar mastite — procure o médico.' },
+      ]
+    },
+    licencas: {
+      name: 'Licenças Maternidade e Paternidade', title: 'Licenças Maternidade e Paternidade',
+      icon: FileText,
+      sections: [
+        { title: '', content: '', links: [], subtitle: 'Licença-Maternidade: Duração', text: 'A licença-maternidade dura 120 dias. Esse período vale tanto para parto quanto para adoção ou guarda judicial. Em caso de aborto não criminoso, a licença é de 14 dias. Se a empresa participa do Programa Empresa Cidadã, a licença pode ser prorrogada de 120 para 180 dias (60 dias extras).' },
+        { title: '', content: '', links: [], subtitle: 'Licença-Maternidade: Início e Salário', text: 'A lei permite iniciar a licença até 28 dias antes da data prevista para o parto — o médico informa a data provável e autoriza o início antecipado. O salário-maternidade da empregada com carteira assinada é pago diretamente pela empresa, que depois compensa os valores junto ao INSS. Não existe carência mínima: basta ter uma contribuição válida antes do parto.' },
+        { title: '', content: '', links: [], subtitle: 'Licença-Maternidade: Como Pedir', text: 'Para empregadas com carteira assinada, o pedido é feito diretamente pela empresa. Documentos normalmente exigidos: documento com foto, atestado médico com data provável do parto (para início antecipado), certidão de nascimento (após o parto) e termo de guarda ou adoção, se for o caso.' },
+        { title: '', content: '', links: [], subtitle: 'Licença-Paternidade: Duração e Pagamento', text: 'A licença-paternidade é de 5 dias corridos. Se a empresa participa do Programa Empresa Cidadã, pode ser de 20 dias corridos. Começa a contar no dia do nascimento do filho (desde que seja dia útil). Os dias são pagos pela empresa como parte da remuneração normal do empregado. Não existe requerimento no INSS para esse benefício.' },
+        { title: '', content: '', links: [], subtitle: 'Licença-Paternidade: Como Pedir', text: 'O colaborador deve: informar o nascimento ao RH imediatamente e entregar a certidão de nascimento da criança. Documentos necessários: certidão de nascimento da criança e documento pessoal com foto.' },
       ]
     },
     acidentes: {
-      name: 'Prevenção de Acidentes', title: 'Prevenção de Acidentes',
+      name: 'Segurança e Prevenção de Acidentes', title: 'Segurança e Prevenção de Acidentes',
       icon: AlertTriangle,
       sections: [
-        { title: '', content: '', links: [], subtitle: 'Por que Prevenir Acidentes?', text: 'A chegada do bebê transforma a casa em um verdadeiro ninho, cheio de amor e aconchego. No entanto, é fundamental lembrar que mesmo nos primeiros meses de vida, a prevenção de acidentes é um ato contínuo de carinho e proteção. Acidentes domésticos são a principal causa de morte de crianças de 0 a 14 anos no Brasil, e muitos podem ser facilmente evitados com medidas simples e atenção redobrada.' },
-        { title: '', content: '', links: [], subtitle: 'Prevenindo Quedas', text: 'Nunca deixe o bebê sozinho em superfícies elevadas como trocadores, camas ou sofás — mesmo que ainda não role. Utilize grades de proteção em escadas e janelas. Prefira berços com grades altas e estáveis. Em carrinhos e cadeirinhas, sempre use o cinto de segurança. No chão, o bebê está mais seguro para brincar e se desenvolver.' },
-        { title: '', content: '', links: [], subtitle: 'Mais informações em breve', text: 'Esta seção será expandida com mais orientações sobre prevenção de afogamento, engasgos, queimaduras, intoxicações e segurança no trânsito assim que o restante do documento for disponibilizado.' },
+        { title: '', content: '', links: [], subtitle: 'Por que Prevenir Acidentes?', text: 'Acidentes domésticos são a principal causa de morte de crianças de 0 a 14 anos no Brasil, e muitos podem ser facilmente evitados com medidas simples e atenção redobrada. Cuidar é também antecipar e prevenir.' },
+        { title: '', content: '', links: [], subtitle: 'Prevenindo Quedas', text: 'Nunca deixe o bebê sozinho em superfícies elevadas — mesmo que ainda não role. No trocador, mantenha sempre uma mão firme no bebê. Se a campainha ou telefone tocar, leve o bebê consigo ou coloque-o no berço. Não use almofadas como barreiras nas laterais da cama — são risco de sufocamento. Cadeirinhas e bebê confortos nunca devem ser colocados em superfícies elevadas. Se a casa tiver escadas, use portões de segurança firmemente instalados.' },
+        { title: '', content: '', links: [], subtitle: 'Casa Segura', text: 'Evite contato da criança com peças e objetos pequenos. Certifique-se de que brinquedos são apropriados para a idade e não têm peças que possam ser engolidas. Remédios, produtos de limpeza e cosméticos devem ficar em armários altos e trancados. Nunca deixe sacos plásticos, cordões ou fios próximos ao bebê. Use protetores nas tomadas. Nunca segure o bebê no colo enquanto bebe líquidos quentes. Nunca deixe cabos de panela voltados para fora do fogão. Use travas em armários e gavetas com itens perigosos. Nunca deixe baldes ou bacias com água no chão. Mantenha a tampa do vaso sanitário fechada. Nunca use talco ou produtos em pó na criança.' },
+        { title: '', content: '', links: [], subtitle: 'Segurança no Carro', text: 'A cadeirinha é obrigatória por lei e salva vidas. Ela deve ser instalada corretamente, de costas para o sentido do movimento até os 2 anos (ou até atingir o limite de peso da cadeirinha). Nunca coloque a cadeirinha virada para frente antes do tempo indicado. Leia o manual da cadeirinha e, se possível, peça a um técnico para verificar a instalação.' },
+        { title: '', content: '', links: [], subtitle: 'Prevenção de Engasgo', text: 'Evite oferecer alimentos redondos inteiros (uva, tomate-cereja, azeitona), alimentos duros sem cozinhar adequadamente e objetos pequenos ao alcance. Cortes seguros: uva ao meio (no sentido do comprimento), salsichas em quartos longitudinais. Na introdução alimentar, adapte sempre a textura à idade. Mantenha objetos pequenos (moedas, botões, baterias) fora do alcance.' },
+        { title: '', content: '', links: [], subtitle: 'Manobra de Desengasgo', text: 'Se o bebê engasgar e não conseguir respirar: em menores de 1 ano, segure-o de bruços sobre seu antebraço e dê até 5 tapinhas firmes nas costas (entre as omoplatas) com a palma da mão. Depois vire-o de costas e faça até 5 compressões no peito com 2 dedos. Repita até o objeto sair ou o bebê conseguir respirar. Se perder a consciência, acione o SAMU (192) e inicie RCP. Procure um curso de primeiros socorros para bebês.' },
       ]
     },
     pais: {
@@ -434,12 +466,20 @@ export default function App() {
       </div>
       <div className="space-y-6">
         <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-gray-100">
-          <h2 className="text-xl font-bold text-gray-800 mb-3">O que é o Aninhar?</h2>
-          <p className="text-gray-700 leading-relaxed">O Projeto Aninhar é um ambiente virtual de informações para pais, mães e cuidadores de crianças de 0 a 24 meses. Aqui você encontra conteúdo organizado por faixa etária e por temas, tornando mais fácil navegar pelos desafios e descobertas dos primeiros dois anos de vida.</p>
+          <h2 className="text-xl font-bold text-gray-800 mb-3">Quem Somos</h2>
+          <p className="text-gray-700 leading-relaxed">O PROJETO ANINHAR é fruto de um trabalho de Mestrado, ligado ao Programa de Pós-Graduação em Saúde Materno Infantil da Universidade Franciscana (UFN), uma iniciativa desenvolvida por uma <strong>Pediatra e Mestranda</strong>, dedicada a transformar o conhecimento científico em apoio prático e acessível. Embora seja uma ferramenta gratuita disponível para famílias de todo o Brasil, temos um vínculo especial com a <strong>Maternidade Santa Isabel do Hospital Casa de Saúde, localizado em Santa Maria/RS</strong>, de onde nasce a inspiração e o desejo de facilitar a transição dos pais para casa com seu bebê.</p>
         </div>
         <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-gray-100">
           <h2 className="text-xl font-bold text-gray-800 mb-3">Nossa Missão</h2>
-          <p className="text-gray-700 leading-relaxed">Oferecer informações baseadas em evidências de forma acessível e acolhedora, ajudando famílias a cuidar de seus bebês com mais segurança, confiança e tranquilidade.</p>
+          <p className="text-gray-700 leading-relaxed">Nossa missão é clara: <strong>simplificar a jornada de cuidados com seu recém-nascido</strong>. Acreditamos que a informação certa, no momento certo, tem o poder de tornar a maternidade e a paternidade mais leves. Por isso, oferecemos um conteúdo <strong>seguro, claro e integralmente baseado em evidências científicas</strong>.</p>
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-md border-2 border-gray-100">
+          <h2 className="text-xl font-bold text-gray-800 mb-3">O que Você Encontrará Aqui</h2>
+          <ul className="text-gray-700 leading-relaxed space-y-2">
+            <li>• <strong>Dicas e Textos Esclarecedores:</strong> Conteúdo didático sobre as dúvidas mais comuns da fase neonatal.</li>
+            <li>• <strong>Vídeos Práticos:</strong> Guias visuais para o dia a dia de cuidados.</li>
+            <li>• <strong>Área de Dúvidas:</strong> Um canal dedicado onde você poderá retirar suas perguntas e buscar o amparo necessário.</li>
+          </ul>
         </div>
         <div className="bg-rose-50 p-6 rounded-2xl border-2 border-rose-100">
           <h2 className="text-xl font-bold text-gray-800 mb-3">Aviso Importante</h2>
