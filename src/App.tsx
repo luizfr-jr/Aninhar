@@ -404,26 +404,6 @@ export default function App() {
             </div>
           ))}
         </div>
-
-        <div className="mt-12 bg-violet-50 p-6 rounded-2xl border-2 border-violet-100">
-          <h3 className="text-lg font-bold text-gray-800 mb-3">Navegue por idade</h3>
-          <p className="text-gray-600 mb-4">Veja como este tema se aplica em cada fase:</p>
-          <div className="flex flex-wrap gap-3">
-            {ages.map(age => (
-              <button
-                key={age.id}
-                onClick={() => {
-                  setCurrentView('age');
-                  setSelectedAge(age.id);
-                  window.scrollTo(0, 0);
-                }}
-                className="px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition-all text-sm font-medium text-gray-700 border-2 border-gray-100 hover:border-violet-200"
-              >
-                {age.name} ({age.subtitle})
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     );
   };
