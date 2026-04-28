@@ -1,31 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 130" width="420" height="130">
-  <!-- Arc of dots: green → orange → red/pink -->
-  <!-- Green dots (bottom-left, larger) -->
-  <circle cx="22"  cy="108" r="11" fill="#5BB89A"/>
-  <circle cx="42"  cy="88"  r="10" fill="#5BB89A"/>
-  <circle cx="60"  cy="67"  r="9"  fill="#5BB89A"/>
-  <!-- Orange dots (middle arc) -->
-  <circle cx="76"  cy="48"  r="9"  fill="#F5A742"/>
-  <circle cx="96"  cy="32"  r="9"  fill="#F5A742"/>
-  <circle cx="118" cy="20"  r="8"  fill="#F5A742"/>
-  <circle cx="141" cy="13"  r="8"  fill="#F5A742"/>
-  <circle cx="165" cy="10"  r="8"  fill="#F5A742"/>
-  <circle cx="188" cy="13"  r="7"  fill="#F5A742"/>
-  <!-- Red/pink dot (top-right peak) -->
-  <circle cx="210" cy="22"  r="9"  fill="#E84E5C"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 290">
+  <!-- Arc of dots: teal → orange → red/pink (bottom-left curving to top-right) -->
+
+  <!-- Teal/green dots -->
+  <circle cx="22"  cy="262" r="10"  fill="#52C0A0"/>
+  <circle cx="38"  cy="234" r="9.5" fill="#52C0A0"/>
+  <circle cx="52"  cy="206" r="9"   fill="#52C0A0"/>
+  <circle cx="65"  cy="179" r="8.5" fill="#52C0A0"/>
+
+  <!-- Orange dots -->
+  <circle cx="80"  cy="154" r="8.5" fill="#F5A742"/>
+  <circle cx="98"  cy="131" r="8.5" fill="#F5A742"/>
+  <circle cx="120" cy="112" r="8"   fill="#F5A742"/>
+  <circle cx="144" cy="97"  r="8"   fill="#F5A742"/>
+  <circle cx="170" cy="86"  r="8"   fill="#F5A742"/>
+  <circle cx="197" cy="80"  r="8"   fill="#F5A742"/>
+  <circle cx="224" cy="79"  r="8"   fill="#F5A742"/>
+  <circle cx="250" cy="83"  r="7.5" fill="#F5A742"/>
+  <circle cx="273" cy="91"  r="7.5" fill="#F5A742"/>
+
+  <!-- Red/pink dots (peak) -->
+  <circle cx="292" cy="105" r="9"   fill="#E84E5C"/>
+  <circle cx="305" cy="122" r="7.5" fill="#E84E5C"/>
 
   <!-- "ninMa" text -->
-  <text x="228" y="68"
-    font-family="'Arial Rounded MT Bold', 'Nunito', Arial, sans-serif"
-    font-size="50" font-weight="800" fill="#7B68C8" letter-spacing="-1">ninMa</text>
+  <text x="145" y="182"
+    font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+    font-size="90" font-weight="800" fill="#7B68C8" letter-spacing="-1">ninMa</text>
+
+  <!-- "Núcleo" and "de Inovação" small text (left of "hub") -->
+  <text x="145" y="225"
+    font-family="Arial,sans-serif"
+    font-size="19" fill="#9B8FD0">Núcleo</text>
+  <text x="145" y="248"
+    font-family="Arial,sans-serif"
+    font-size="19" fill="#9B8FD0">de Inovação</text>
 
   <!-- "hub" text -->
-  <text x="228" y="108"
-    font-family="'Arial Rounded MT Bold', 'Nunito', Arial, sans-serif"
-    font-size="40" font-weight="800" fill="#5A5278" letter-spacing="-1">hub</text>
+  <text x="268" y="255"
+    font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+    font-size="82" font-weight="800" fill="#6B58B8" letter-spacing="-1">hub</text>
 
-  <!-- Subtitle line 1 -->
-  <text x="228" y="122"
-    font-family="Arial, sans-serif"
-    font-size="11" fill="#888">Núcleo de Inovação  <tspan font-weight="bold" fill="#555">Materno Infantil UFN</tspan></text>
+  <!-- "Materno Infantil UFN" bottom line -->
+  <text x="145" y="280"
+    font-family="Arial,sans-serif"
+    font-size="16" fill="#7B68C8">
+    <tspan font-weight="bold">Materno Infantil</tspan>
+    <tspan fill="#9B8FD0"> UFN</tspan>
+  </text>
 </svg>

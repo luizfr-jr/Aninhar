@@ -1,23 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80" width="340" height="80">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 115">
   <defs>
-    <linearGradient id="oryumGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#4A90D9"/>
-      <stop offset="50%"  stop-color="#6B5FCF"/>
-      <stop offset="100%" stop-color="#8B3FC8"/>
+    <linearGradient id="blueGrad" x1="20%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#82C0F8"/>
+      <stop offset="45%"  stop-color="#5580E8"/>
+      <stop offset="100%" stop-color="#3840C0"/>
     </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%"   stop-color="#9068D8"/>
+      <stop offset="50%"  stop-color="#6838C0"/>
+      <stop offset="100%" stop-color="#4820A0"/>
+    </linearGradient>
+    <radialGradient id="shine1" cx="35%" cy="22%" r="55%">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shine2" cx="65%" cy="72%" r="50%">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
-  <!-- Icon: two interlocking S-curves in a circle -->
-  <circle cx="40" cy="40" r="36" fill="url(#oryumGrad)" opacity="0.15"/>
-  <!-- Outer S shape -->
-  <path d="M28 18 C18 18 14 28 20 34 C26 40 46 40 52 46 C58 52 54 62 44 62"
-    stroke="url(#oryumGrad)" stroke-width="7" fill="none" stroke-linecap="round"/>
-  <!-- Inner S shape (mirrored) -->
-  <path d="M52 18 C62 18 66 28 60 34 C54 40 34 40 28 46 C22 52 26 62 36 62"
-    stroke="#6B5FCF" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <!-- Blue upper-left petal -->
+  <path d="M57 6 C35 4,10 20,10 46 C10 64,26 78,50 76 C64 75,74 65,76 52 C78 38,70 18,57 6Z"
+    fill="url(#blueGrad)"/>
+  <path d="M57 6 C35 4,10 20,10 46 C10 64,26 78,50 76 C64 75,74 65,76 52 C78 38,70 18,57 6Z"
+    fill="url(#shine1)"/>
 
-  <!-- "ORYUM TECH" text -->
-  <text x="88" y="52"
-    font-family="'Helvetica Neue', Arial, sans-serif"
-    font-size="32" font-weight="700" fill="#2D2D2D" letter-spacing="4">ORYUM TECH</text>
+  <!-- White separator gap -->
+  <line x1="54" y1="10" x2="48" y2="74" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Purple lower-right petal -->
+  <path d="M55 42 C68 30,95 32,100 56 C104 74,88 96,65 100 C48 103,34 92,34 74 C34 58,44 50,55 42Z"
+    fill="url(#purpleGrad)"/>
+  <path d="M55 42 C68 30,95 32,100 56 C104 74,88 96,65 100 C48 103,34 92,34 74 C34 58,44 50,55 42Z"
+    fill="url(#shine2)"/>
+
+  <!-- ORYUM TECH -->
+  <text x="128" y="76"
+    font-family="'Helvetica Neue','Arial',sans-serif"
+    font-size="50" font-weight="300" fill="#333333" letter-spacing="7">ORYUM TECH</text>
 </svg>
