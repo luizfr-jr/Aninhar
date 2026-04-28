@@ -301,7 +301,7 @@ export default function App() {
         <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center">
           <Heart className="w-16 h-16 text-violet-500" />
         </div>
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">Bem-vindo ao Projeto Aninhar</h1>
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">Bem-vindo ao Aninhar</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Um ambiente acolhedor de informações para você cuidar do seu bebê com segurança e amor.
           Explore os temas abaixo para encontrar o que precisa.
@@ -443,7 +443,7 @@ export default function App() {
         <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center">
           <Heart className="w-10 h-10 text-violet-400" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Sobre o Projeto Aninhar</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Sobre o Aninhar</h1>
         <p className="text-gray-600">Um ambiente acolhedor de informação para famílias</p>
       </div>
       <div className="space-y-6">
@@ -511,7 +511,7 @@ export default function App() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <button onClick={() => navTo('home')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="flex flex-col leading-tight">
-              <span className="text-xl font-bold text-violet-600">Projeto Aninhar</span>
+              <span className="text-xl font-bold text-violet-600">Aninhar</span>
               <span className="text-xs text-gray-400 font-medium">NinMa Hub · UFN</span>
             </div>
           </button>
@@ -557,7 +557,7 @@ export default function App() {
 
           {/* Credits */}
           <div className="text-center space-y-2 border-t border-gray-100 pt-6">
-            <p className="text-sm font-semibold text-violet-600">Projeto Aninhar — Cuidando com amor e informação</p>
+            <p className="text-sm font-semibold text-violet-600">Aninhar — Cuidando com amor e informação</p>
             <p className="text-xs text-gray-500">
               Desenvolvido por <span className="font-medium text-gray-700">Luiz Fernando Rodrigues Junior</span> e <span className="font-medium text-gray-700">Kalleby Evangelho Mota</span>
             </p>
