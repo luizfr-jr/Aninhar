@@ -1,24 +1,12 @@
 import React, { useState } from 'react';
 import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, ChevronRight, Menu, X, Droplets, FileText, ClipboardList, AlertTriangle } from 'lucide-react';
 
-interface LinkButtonProps {
-  themeId: string;
-  text: string;
-}
-
 interface Section {
   title: string;
   content: string;
   links: string[];
   subtitle?: string;
   text?: string;
-}
-
-interface AgeContent {
-  [key: string]: {
-    title: string;
-    sections: Section[];
-  };
 }
 
 interface ThemeContent {
@@ -31,17 +19,9 @@ interface ThemeContent {
 }
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'age' | 'theme' | 'about' | 'contact'>('home');
-  const [selectedAge, setSelectedAge] = useState<string | null>(null);
+  const [currentView, setCurrentView] = useState<'home' | 'theme' | 'about' | 'contact'>('home');
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const ages = [
-    { id: 'newborn', name: 'Recém-Nascido', subtitle: '0-28 dias', color: 'bg-pink-100' },
-    { id: 'baby1-6', name: 'Bebê', subtitle: '1-6 meses', color: 'bg-violet-100' },
-    { id: 'baby7-12', name: 'Bebê', subtitle: '7-12 meses', color: 'bg-amber-100' },
-    { id: 'toddler', name: 'Criança', subtitle: '13-24 meses', color: 'bg-orange-100' }
-  ];
 
   const themes = [
     { id: 'amamentacao', name: 'Amamentação', icon: Heart, color: 'text-violet-600' },
@@ -56,89 +36,6 @@ export default function App() {
     { id: 'primeirosPassos', name: 'Primeiros Passos', icon: ClipboardList, color: 'text-emerald-600' },
     { id: 'licencas', name: 'Licenças Maternidade e Paternidade', icon: FileText, color: 'text-blue-600' },
   ];
-
-  const ageContent: AgeContent = {
-    'newborn': {
-      title: 'Recém-Nascido (0-28 dias)',
-      sections: [
-        {
-          title: 'Alimentação',
-          content: 'Nesta fase, o bebê deve ser alimentado exclusivamente com leite materno ou fórmula. A amamentação em livre demanda é recomendada, geralmente a cada 2-3 horas.',
-          links: ['amamentacao', 'alimentacao']
-        },
-        {
-          title: 'Sono',
-          content: 'Recém-nascidos dormem de 16-18 horas por dia, em ciclos curtos. É normal que não diferenciem dia e noite ainda. O ambiente seguro de sono é fundamental para prevenir a SMSL.',
-          links: ['sono']
-        },
-        {
-          title: 'Desenvolvimento',
-          content: 'O bebê responde a sons altos, foca objetos a 20-30 cm de distância e apresenta reflexos primitivos como sucção e preensão palmar.',
-          links: ['desenvolvimento']
-        }
-      ]
-    },
-    'baby1-6': {
-      title: 'Bebê (1-6 meses)',
-      sections: [
-        {
-          title: 'Alimentação',
-          content: 'Continua com aleitamento exclusivo até os 6 meses. Aos 5-6 meses, observe os sinais de prontidão para introdução alimentar: sentar com apoio, levar objetos à boca, interesse pela comida.',
-          links: ['amamentacao', 'alimentacao']
-        },
-        {
-          title: 'Sono',
-          content: 'Padrão de sono começa a se consolidar. Por volta dos 4 meses, pode ocorrer a regressão de sono, relacionada a um importante salto de desenvolvimento.',
-          links: ['sono', 'desenvolvimento']
-        },
-        {
-          title: 'Desenvolvimento',
-          content: 'Sorriso social (2 meses), sustenta a cabeça (3 meses), rola (4-5 meses), inicia sons vocálicos e pode começar a sentar com apoio (6 meses).',
-          links: ['desenvolvimento']
-        }
-      ]
-    },
-    'baby7-12': {
-      title: 'Bebê (7-12 meses)',
-      sections: [
-        {
-          title: 'Alimentação',
-          content: 'Introdução alimentar em pleno vigor. Ofereça variedade de grupos alimentares, atenção aos cortes seguros e sinais de alergias alimentares.',
-          links: ['alimentacao', 'saude']
-        },
-        {
-          title: 'Sono',
-          content: 'Geralmente 2 sonecas diurnas. Pode ocorrer regressão de sono aos 8 meses devido à ansiedade da separação. Mantenha rituais consistentes.',
-          links: ['sono', 'desenvolvimento']
-        },
-        {
-          title: 'Desenvolvimento',
-          content: 'Senta sem apoio (7-8 meses), engatinha (8-10 meses), fica em pé com apoio (9-11 meses), primeiras palavras e permanência do objeto.',
-          links: ['desenvolvimento']
-        }
-      ]
-    },
-    'toddler': {
-      title: 'Criança (13-24 meses)',
-      sections: [
-        {
-          title: 'Alimentação',
-          content: 'Transição para comida da família. Pode apresentar seletividade alimentar ("picky eater"). Mantenha ambiente tranquilo e ofereça variedade sem pressão.',
-          links: ['alimentacao']
-        },
-        {
-          title: 'Sono',
-          content: 'Transição para 1 soneca diurna. Possível regressão aos 18 meses. Autonomia crescente pode gerar resistência ao sono.',
-          links: ['sono']
-        },
-        {
-          title: 'Desenvolvimento',
-          content: 'Primeiros passos (12-15 meses), explosão de linguagem, brincadeiras simbólicas, fase de birras e descoberta da autonomia.',
-          links: ['desenvolvimento']
-        }
-      ]
-    }
-  };
 
   const themeContent: ThemeContent = {
     amamentacao: {
@@ -281,19 +178,6 @@ export default function App() {
     },
   };
 
-  const LinkButton: React.FC<LinkButtonProps> = ({ themeId, text }) => (
-    <button
-      onClick={() => {
-        setCurrentView('theme');
-        setSelectedTheme(themeId);
-        window.scrollTo(0, 0);
-      }}
-      className="inline-flex items-center text-sm text-violet-600 hover:text-violet-800 font-medium underline"
-    >
-      {text} <ChevronRight className="w-4 h-4 ml-1" />
-    </button>
-  );
-
   const renderHome = () => (
     <div className="space-y-10">
       {/* Hero */}
@@ -337,45 +221,6 @@ export default function App() {
     </div>
   );
 
-  const renderAgeView = () => {
-    const content = selectedAge ? ageContent[selectedAge] : undefined;
-
-    return (
-      <div className="max-w-4xl mx-auto">
-        <button
-          onClick={() => setCurrentView('home')}
-          className="mb-6 flex items-center text-violet-600 hover:text-violet-800 font-medium"
-        >
-          <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" />
-          Voltar para início
-        </button>
-
-        <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">{content?.title}</h1>
-          <p className="text-gray-600">Informações essenciais para esta fase</p>
-        </div>
-
-        <div className="space-y-8">
-          {content?.sections.map((section, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-2xl shadow-md border-2 border-gray-100">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">{section.title}</h2>
-              <p className="text-gray-700 mb-4 leading-relaxed">{section.content}</p>
-              <div className="flex flex-wrap gap-3">
-                {section.links.map((linkId: string, linkIdx: number) => (
-                  <LinkButton
-                    key={linkIdx}
-                    themeId={linkId}
-                    text={`Saiba mais: ${themeContent[linkId]?.name || 'Desconhecido'}`}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-
   const renderThemeView = () => {
     const content = selectedTheme ? themeContent[selectedTheme] : undefined;
     const Icon = content?.icon;
@@ -408,7 +253,7 @@ export default function App() {
     );
   };
 
-  const navTo = (view: 'home' | 'age' | 'theme' | 'about' | 'contact') => {
+  const navTo = (view: 'home' | 'theme' | 'about' | 'contact') => {
     setCurrentView(view);
     setMobileMenuOpen(false);
     window.scrollTo(0, 0);
@@ -520,7 +365,6 @@ export default function App() {
 
       <main className="container mx-auto px-4 py-8">
         {currentView === 'home' && renderHome()}
-        {currentView === 'age' && renderAgeView()}
         {currentView === 'theme' && renderThemeView()}
         {currentView === 'about' && renderAbout()}
         {currentView === 'contact' && renderContact()}
