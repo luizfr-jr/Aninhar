@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, Clock, ChevronRight, Menu, X, Droplets, FileText, ClipboardList, AlertTriangle } from 'lucide-react';
+import { Book, Baby, Utensils, Moon, Heart, Stethoscope, Shield, Users, ChevronRight, Menu, X, Droplets, FileText, ClipboardList, AlertTriangle } from 'lucide-react';
 
 interface LinkButtonProps {
   themeId: string;
@@ -38,13 +38,13 @@ export default function App() {
 
   const ages = [
     { id: 'newborn', name: 'Recém-Nascido', subtitle: '0-28 dias', color: 'bg-pink-100' },
-    { id: 'baby1-6', name: 'Bebê', subtitle: '1-6 meses', color: 'bg-rose-100' },
+    { id: 'baby1-6', name: 'Bebê', subtitle: '1-6 meses', color: 'bg-violet-100' },
     { id: 'baby7-12', name: 'Bebê', subtitle: '7-12 meses', color: 'bg-amber-100' },
     { id: 'toddler', name: 'Criança', subtitle: '13-24 meses', color: 'bg-orange-100' }
   ];
 
   const themes = [
-    { id: 'amamentacao', name: 'Amamentação', icon: Heart, color: 'text-rose-600' },
+    { id: 'amamentacao', name: 'Amamentação', icon: Heart, color: 'text-violet-600' },
     { id: 'alimentacao', name: 'Introdução Alimentar', icon: Utensils, color: 'text-amber-600' },
     { id: 'sono', name: 'Sono', icon: Moon, color: 'text-indigo-600' },
     { id: 'desenvolvimento', name: 'Desenvolvimento', icon: Baby, color: 'text-pink-600' },
@@ -288,57 +288,30 @@ export default function App() {
         setSelectedTheme(themeId);
         window.scrollTo(0, 0);
       }}
-      className="inline-flex items-center text-sm text-rose-600 hover:text-rose-800 font-medium underline"
+      className="inline-flex items-center text-sm text-violet-600 hover:text-violet-800 font-medium underline"
     >
       {text} <ChevronRight className="w-4 h-4 ml-1" />
     </button>
   );
 
   const renderHome = () => (
-    <div className="space-y-12">
+    <div className="space-y-10">
       {/* Hero */}
       <div className="text-center py-12 px-4">
-        <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-rose-200 to-amber-200 flex items-center justify-center">
-          <Heart className="w-16 h-16 text-rose-400" />
+        <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center">
+          <Heart className="w-16 h-16 text-violet-500" />
         </div>
         <h1 className="text-4xl font-bold text-gray-800 mb-4">Bem-vindo ao Projeto Aninhar</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Um ambiente acolhedor de informações para você cuidar do seu bebê com segurança e amor.
-          Navegue por idade ou por tema para encontrar o que precisa.
+          Explore os temas abaixo para encontrar o que precisa.
         </p>
-      </div>
-
-      {/* Navigation by Age */}
-      <div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center justify-center">
-          <Clock className="w-8 h-8 mr-3 text-rose-400" />
-          Navegue por Idade
-        </h2>
-        <div className="max-w-3xl mx-auto">
-          <div className="grid grid-cols-2 gap-6">
-            {ages.map(age => (
-              <button
-                key={age.id}
-                onClick={() => {
-                  setCurrentView('age');
-                  setSelectedAge(age.id);
-                  window.scrollTo(0, 0);
-                }}
-                className={`${age.color} p-8 rounded-2xl shadow-md hover:shadow-xl transition-all transform hover:-translate-y-1 aspect-square flex flex-col items-center justify-center`}
-              >
-                <Baby className="w-16 h-16 mb-4 text-gray-700" />
-                <h3 className="text-xl font-bold text-gray-800 mb-1">{age.name}</h3>
-                <p className="text-gray-600 text-sm">{age.subtitle}</p>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Navigation by Theme */}
       <div>
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center justify-center">
-          <Book className="w-8 h-8 mr-3 text-rose-400" />
+          <Book className="w-8 h-8 mr-3 text-violet-500" />
           Navegue por Tema
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -352,7 +325,7 @@ export default function App() {
                   setSelectedTheme(theme.id);
                   window.scrollTo(0, 0);
                 }}
-                className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all border-2 border-gray-100 hover:border-rose-200 transform hover:-translate-y-1"
+                className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all border-2 border-gray-100 hover:border-violet-300 transform hover:-translate-y-1"
               >
                 <Icon className={`w-12 h-12 mx-auto mb-4 ${theme.color}`} />
                 <h3 className="text-lg font-bold text-gray-800">{theme.name}</h3>
@@ -371,13 +344,13 @@ export default function App() {
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => setCurrentView('home')}
-          className="mb-6 flex items-center text-rose-600 hover:text-rose-800 font-medium"
+          className="mb-6 flex items-center text-violet-600 hover:text-violet-800 font-medium"
         >
           <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" />
           Voltar para início
         </button>
 
-        <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8">
+        <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">{content?.title}</h1>
           <p className="text-gray-600">Informações essenciais para esta fase</p>
         </div>
@@ -411,14 +384,14 @@ export default function App() {
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => setCurrentView('home')}
-          className="mb-6 flex items-center text-rose-600 hover:text-rose-800 font-medium"
+          className="mb-6 flex items-center text-violet-600 hover:text-violet-800 font-medium"
         >
           <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" />
           Voltar para início
         </button>
 
-        <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8 text-center">
-          {Icon && <Icon className="w-16 h-16 mx-auto mb-4 text-rose-400" />}
+        <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
+          {Icon && <Icon className="w-16 h-16 mx-auto mb-4 text-violet-400" />}
           <h1 className="text-3xl font-bold text-gray-800 mb-2">{content?.title}</h1>
           <p className="text-gray-600">Guia completo sobre o tema</p>
         </div>
@@ -432,7 +405,7 @@ export default function App() {
           ))}
         </div>
 
-        <div className="mt-12 bg-rose-50 p-6 rounded-2xl border-2 border-rose-100">
+        <div className="mt-12 bg-violet-50 p-6 rounded-2xl border-2 border-violet-100">
           <h3 className="text-lg font-bold text-gray-800 mb-3">Navegue por idade</h3>
           <p className="text-gray-600 mb-4">Veja como este tema se aplica em cada fase:</p>
           <div className="flex flex-wrap gap-3">
@@ -444,7 +417,7 @@ export default function App() {
                   setSelectedAge(age.id);
                   window.scrollTo(0, 0);
                 }}
-                className="px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition-all text-sm font-medium text-gray-700 border-2 border-gray-100 hover:border-rose-200"
+                className="px-4 py-2 bg-white rounded-lg shadow hover:shadow-md transition-all text-sm font-medium text-gray-700 border-2 border-gray-100 hover:border-violet-200"
               >
                 {age.name} ({age.subtitle})
               </button>
@@ -463,12 +436,12 @@ export default function App() {
 
   const renderAbout = () => (
     <div className="max-w-3xl mx-auto">
-      <button onClick={() => navTo('home')} className="mb-6 flex items-center text-rose-600 hover:text-rose-800 font-medium">
+      <button onClick={() => navTo('home')} className="mb-6 flex items-center text-violet-600 hover:text-violet-800 font-medium">
         <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" /> Voltar para início
       </button>
-      <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8 text-center">
-        <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-rose-200 to-amber-200 flex items-center justify-center">
-          <Heart className="w-10 h-10 text-rose-400" />
+      <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
+        <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center">
+          <Heart className="w-10 h-10 text-violet-400" />
         </div>
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Sobre o Projeto Aninhar</h1>
         <p className="text-gray-600">Um ambiente acolhedor de informação para famílias</p>
@@ -490,7 +463,7 @@ export default function App() {
             <li>• <strong>Área de Dúvidas:</strong> Um canal dedicado onde você poderá retirar suas perguntas e buscar o amparo necessário.</li>
           </ul>
         </div>
-        <div className="bg-rose-50 p-6 rounded-2xl border-2 border-rose-100">
+        <div className="bg-violet-50 p-6 rounded-2xl border-2 border-violet-100">
           <h2 className="text-xl font-bold text-gray-800 mb-3">Aviso Importante</h2>
           <p className="text-gray-700 leading-relaxed">As informações do Aninhar têm caráter educativo e não substituem a avaliação de um profissional de saúde. Sempre consulte seu pediatra, médico ou outro profissional qualificado para orientações específicas sobre a saúde do seu filho.</p>
         </div>
@@ -500,10 +473,10 @@ export default function App() {
 
   const renderContact = () => (
     <div className="max-w-2xl mx-auto">
-      <button onClick={() => navTo('home')} className="mb-6 flex items-center text-rose-600 hover:text-rose-800 font-medium">
+      <button onClick={() => navTo('home')} className="mb-6 flex items-center text-violet-600 hover:text-violet-800 font-medium">
         <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" /> Voltar para início
       </button>
-      <div className="bg-gradient-to-br from-rose-50 to-amber-50 p-8 rounded-3xl mb-8 text-center">
+      <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Fale Conosco</h1>
         <p className="text-gray-600">Sugestões, dúvidas ou colaborações</p>
       </div>
@@ -513,17 +486,17 @@ export default function App() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-              <input type="text" placeholder="Seu nome" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-300" />
+              <input type="text" placeholder="Seu nome" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-violet-300" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-              <input type="email" placeholder="seu@email.com" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-300" />
+              <input type="email" placeholder="seu@email.com" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-violet-300" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Mensagem</label>
-              <textarea rows={4} placeholder="Como podemos ajudar?" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-rose-300 resize-none" />
+              <textarea rows={4} placeholder="Como podemos ajudar?" className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-violet-300 resize-none" />
             </div>
-            <button className="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 rounded-lg transition-colors">
+            <button className="w-full bg-violet-500 hover:bg-violet-600 text-white font-bold py-3 rounded-lg transition-colors">
               Enviar Mensagem
             </button>
           </div>
@@ -534,29 +507,32 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-md">
+      <header className="bg-white shadow-md border-b-4 border-violet-500">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <button onClick={() => navTo('home')} className="text-xl font-bold text-gray-800 hover:text-rose-600 transition-colors">
-            Projeto Aninhar
+          <button onClick={() => navTo('home')} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="flex flex-col leading-tight">
+              <span className="text-xl font-bold text-violet-600">Projeto Aninhar</span>
+              <span className="text-xs text-gray-400 font-medium">NinMa Hub · UFN</span>
+            </div>
           </button>
           <button
-            className="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-300"
+            className="lg:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-300"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
           <nav className="hidden lg:flex space-x-6">
-            <button onClick={() => navTo('home')} className="text-gray-700 hover:text-rose-500 font-medium transition-colors">Home</button>
-            <button onClick={() => navTo('about')} className="text-gray-700 hover:text-rose-500 font-medium transition-colors">Sobre</button>
-            <button onClick={() => navTo('contact')} className="text-gray-700 hover:text-rose-500 font-medium transition-colors">Contato</button>
+            <button onClick={() => navTo('home')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Home</button>
+            <button onClick={() => navTo('about')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Sobre</button>
+            <button onClick={() => navTo('contact')} className="text-gray-700 hover:text-violet-500 font-medium transition-colors">Contato</button>
           </nav>
         </div>
         {mobileMenuOpen && (
           <nav className="lg:hidden bg-white border-t border-gray-100">
             <ul className="space-y-1 p-4">
-              <li><button onClick={() => navTo('home')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-rose-500 font-medium">Home</button></li>
-              <li><button onClick={() => navTo('about')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-rose-500 font-medium">Sobre</button></li>
-              <li><button onClick={() => navTo('contact')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-rose-500 font-medium">Contato</button></li>
+              <li><button onClick={() => navTo('home')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Home</button></li>
+              <li><button onClick={() => navTo('about')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Sobre</button></li>
+              <li><button onClick={() => navTo('contact')} className="block w-full text-left px-2 py-2 text-gray-700 hover:text-violet-500 font-medium">Contato</button></li>
             </ul>
           </nav>
         )}
@@ -570,13 +546,44 @@ export default function App() {
         {currentView === 'contact' && renderContact()}
       </main>
 
-      <footer className="bg-white/80 border-t border-rose-100 mt-16">
-        <div className="container mx-auto px-4 py-8 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-rose-200 to-amber-200 flex items-center justify-center">
-            <Heart className="w-8 h-8 text-rose-400" />
+      <footer className="bg-white border-t-4 border-violet-500 mt-16">
+        <div className="container mx-auto px-4 py-10">
+          {/* Logos */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-10 mb-8">
+            {/* NinMa Hub Logo */}
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col items-start">
+                <div className="flex items-end gap-1 leading-none">
+                  <span className="text-3xl font-bold" style={{color:'#7B68C8'}}>nin</span>
+                  <span className="text-3xl font-bold" style={{color:'#7B68C8'}}>Ma</span>
+                  <span className="text-3xl font-bold text-gray-700 ml-1">hub</span>
+                </div>
+                <div className="text-xs text-gray-500 mt-0.5">
+                  <span>Núcleo de Inovação </span>
+                  <span className="font-bold text-gray-600">Materno Infantil UFN</span>
+                </div>
+              </div>
+            </div>
+            <div className="hidden md:block w-px h-12 bg-gray-200" />
+            {/* Oryum Tech Logo */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center">
+                <span className="text-white font-bold text-sm">O</span>
+              </div>
+              <span className="text-2xl font-bold tracking-widest text-gray-700">ORYUM TECH</span>
+            </div>
           </div>
-          <p className="text-gray-600 mb-2">Projeto Aninhar</p>
-          <p className="text-sm text-gray-500">Cuidando com amor e informação</p>
+
+          {/* Credits */}
+          <div className="text-center space-y-2 border-t border-gray-100 pt-6">
+            <p className="text-sm font-semibold text-violet-600">Projeto Aninhar — Cuidando com amor e informação</p>
+            <p className="text-xs text-gray-500">
+              Desenvolvido por <span className="font-medium text-gray-700">Luiz Fernando Rodrigues Junior</span> e <span className="font-medium text-gray-700">Kalleby Evangelho Mota</span>
+            </p>
+            <p className="text-xs text-gray-400">
+              Uma iniciativa <span className="font-medium">NinMa Hub</span> · Universidade Franciscana (UFN) · Tecnologia <span className="font-medium">Oryum Tech</span>
+            </p>
+          </div>
         </div>
       </footer>
     </div>
