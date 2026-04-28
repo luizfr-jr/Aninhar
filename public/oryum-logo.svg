@@ -1,41 +1,55 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 115">
   <defs>
-    <linearGradient id="blueGrad" x1="20%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%"   stop-color="#82C0F8"/>
-      <stop offset="45%"  stop-color="#5580E8"/>
-      <stop offset="100%" stop-color="#3840C0"/>
+    <!-- 3D lighting overlay: light from upper-left -->
+    <linearGradient id="light3d" x1="5" y1="5" x2="105" y2="105" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.62"/>
+      <stop offset="38%"  stop-color="white" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="black" stop-opacity="0.18"/>
     </linearGradient>
-    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="80%" y2="100%">
-      <stop offset="0%"   stop-color="#9068D8"/>
-      <stop offset="50%"  stop-color="#6838C0"/>
-      <stop offset="100%" stop-color="#4820A0"/>
-    </linearGradient>
-    <radialGradient id="shine1" cx="35%" cy="22%" r="55%">
-      <stop offset="0%"   stop-color="white" stop-opacity="0.75"/>
+    <!-- Bright shine spot (upper-left, inside blue area) -->
+    <radialGradient id="shine" cx="28" cy="20" r="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.82"/>
       <stop offset="100%" stop-color="white" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="shine2" cx="65%" cy="72%" r="50%">
-      <stop offset="0%"   stop-color="white" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="white" stop-opacity="0"/>
-    </radialGradient>
+    <!-- Clip to icon circle -->
+    <clipPath id="iconClip">
+      <circle cx="55" cy="55" r="50"/>
+    </clipPath>
   </defs>
 
-  <!-- Blue upper-left petal -->
-  <path d="M57 6 C35 4,10 20,10 46 C10 64,26 78,50 76 C64 75,74 65,76 52 C78 38,70 18,57 6Z"
-    fill="url(#blueGrad)"/>
-  <path d="M57 6 C35 4,10 20,10 46 C10 64,26 78,50 76 C64 75,74 65,76 52 C78 38,70 18,57 6Z"
-    fill="url(#shine1)"/>
+  <g clip-path="url(#iconClip)">
+    <!--
+      Yin-yang construction: two halves share an S-curve divider.
+      Paths are defined with the S-curve vertical, then rotated 45° CW
+      so blue ends up at upper-left and purple at lower-right.
+      Outer circle r=50 centered at (55,55).
+      Inner semicircles r=25 centered at (55,30) and (55,80).
+    -->
+    <g transform="rotate(45, 55, 55)">
+      <!-- Blue: left half (CCW outer arc + S-curve through both inner circles) -->
+      <path d="M 55 5
+               A 50 50 0 0 0 55 105
+               A 25 25 0 0 0 55 55
+               A 25 25 0 0 1 55 5 Z"
+        fill="#5888EE"/>
+      <!-- Purple: right half (mirror) -->
+      <path d="M 55 5
+               A 50 50 0 0 1 55 105
+               A 25 25 0 0 1 55 55
+               A 25 25 0 0 0 55 5 Z"
+        fill="#5C28B4"/>
+    </g>
 
-  <!-- White separator gap -->
-  <line x1="54" y1="10" x2="48" y2="74" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+    <!-- 3D lighting overlay (applied in global coords, not rotated) -->
+    <rect x="5" y="5" width="100" height="100" fill="url(#light3d)"/>
+    <!-- Glossy shine spot at upper-left (blue area) -->
+    <circle cx="55" cy="55" r="50" fill="url(#shine)"/>
+    <!-- Small elongated highlight inside blue area -->
+    <ellipse cx="30" cy="24" rx="14" ry="8"
+      transform="rotate(-45, 30, 24)" fill="white" opacity="0.45"/>
+  </g>
 
-  <!-- Purple lower-right petal -->
-  <path d="M55 42 C68 30,95 32,100 56 C104 74,88 96,65 100 C48 103,34 92,34 74 C34 58,44 50,55 42Z"
-    fill="url(#purpleGrad)"/>
-  <path d="M55 42 C68 30,95 32,100 56 C104 74,88 96,65 100 C48 103,34 92,34 74 C34 58,44 50,55 42Z"
-    fill="url(#shine2)"/>
-
-  <!-- ORYUM TECH -->
+  <!-- ORYUM TECH text -->
   <text x="128" y="76"
     font-family="'Helvetica Neue','Arial',sans-serif"
     font-size="50" font-weight="300" fill="#333333" letter-spacing="7">ORYUM TECH</text>
