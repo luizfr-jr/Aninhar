@@ -183,8 +183,8 @@ export default function App() {
     <div className="space-y-10">
       {/* Hero */}
       <div className="text-center py-12 px-4">
-        <div className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center">
-          <Heart className="w-16 h-16 text-violet-500" />
+        <div className="w-40 h-40 mx-auto mb-6">
+          <img src="/aninhar-logo.jpg" alt="Aninhar" className="w-full h-full object-contain" />
         </div>
         <h1 className="text-4xl font-bold text-gray-800 mb-4">Bem-vindo ao Aninhar</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -349,8 +349,8 @@ export default function App() {
         <ChevronRight className="w-5 h-5 mr-1 transform rotate-180" /> Voltar para início
       </button>
       <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-8 rounded-3xl mb-8 text-center">
-        <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-violet-200 to-purple-200 flex items-center justify-center">
-          <Heart className="w-10 h-10 text-violet-400" />
+        <div className="w-24 h-24 mx-auto mb-4">
+          <img src="/aninhar-logo.jpg" alt="Aninhar" className="w-full h-full object-contain" />
         </div>
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Sobre o Aninhar</h1>
         <p className="text-gray-600">Um ambiente acolhedor de informação para famílias</p>
