@@ -1,0 +1,7 @@
+services:
+  aninhar:
+    image: ghcr.io/luizfr-jr/aninhar:latest
+    container_name: aninhar
+    ports:
+      - "8090:80"
+    restart: unless-stopped

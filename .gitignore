@@ -37,3 +37,6 @@ dist-ssr
 # Build output
 dist/
 build/
+
+# Deploy (contém valores específicos de versão, não versionar)
+DEPLOY.md
