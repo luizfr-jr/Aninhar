@@ -465,9 +465,9 @@ export default function App() {
         <div className="container mx-auto px-4 py-10">
           {/* Logos */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-10 mb-8">
-            <img src="/ninmahub-logo.png" alt="NinMa Hub" className="h-16 w-auto" />
-            <div className="hidden md:block w-px h-12 bg-gray-200" />
-            <img src="/oryum-logo.png" alt="Oryum Tech" className="h-12 w-auto" />
+            <img src="/ninmahub-logo.png" alt="NinMa Hub" className="h-8 w-auto" />
+            <div className="hidden md:block w-px h-8 bg-gray-200" />
+            <img src="/oryum-logo.png" alt="Oryum Tech" className="h-6 w-auto" />
           </div>
 
           {/* Credits */}
