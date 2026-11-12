@@ -13,6 +13,13 @@ module.exports = {
     "*.config.*",
     ".eslintrc.cjs",
   ],
+  overrides: [
+    {
+      files: ["server/**/*.js", "tests/server*.js", "scripts/*.mjs"],
+      env: { node: true },
+      parserOptions: { sourceType: "module", ecmaVersion: "latest" },
+    },
+  ],
   parser: "@typescript-eslint/parser",
   plugins: ["react-refresh"],
   rules: {

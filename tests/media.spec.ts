@@ -1,42 +1,36 @@
 import { test, expect, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
+const seed = JSON.parse(
+  readFileSync(new URL("../content/seed.json", import.meta.url), "utf8"),
+);
+import type { ContentDocument } from "../src/types/content";
 
 async function injectMedia(page: Page, broken = false) {
-  await page.goto("/");
-  // Use the same Vite module instance as the app; fixtures exist only in this page.
-  // The source catalog remains unchanged and no production media is fabricated.
-  await page.evaluate(
-    async ({ broken }) => {
-      const modulePath = "/src/data/topics.ts";
-      const { topics } = await import(modulePath);
-      const topic = topics.find(
-        (item: { id: string }) => item.id === "higiene",
-      );
-      const section = topic.sections[0];
-      section.image = {
-        src: broken
-          ? "/test-media/unavailable.svg"
-          : "/test-media/illustration.svg",
-        alt: "Ilustração de teste para os cuidados no banho",
-        caption: "Legenda da ilustração de teste",
-      };
-      section.video = {
-        url: broken
-          ? "https://youtube.com.evil.example/watch?v=abcdefghijk"
-          : "https://youtu.be/abcdefghijk",
-        title: "Vídeo de teste sobre cuidados no banho",
-      };
-      section.links = [
-        { label: "Referência de teste", url: "https://example.org/care" },
-        { label: "Link inseguro de teste", url: "javascript:alert(1)" },
-      ];
-      window.location.hash = `topic/higiene/${section.id}`;
-    },
-    { broken },
+  const content: ContentDocument = structuredClone(seed);
+  const topic = content.topics.find((item) => item.id === "higiene")!;
+  const section = topic.sections[0];
+  section.image = {
+    src: broken
+      ? "/test-media/unavailable.svg"
+      : "/test-media/illustration.svg",
+    alt: "Ilustração de teste para os cuidados no banho",
+    caption: "Legenda da ilustração de teste",
+  };
+  section.video = {
+    url: broken
+      ? "https://youtube.com.evil.example/watch?v=abcdefghijk"
+      : "https://youtu.be/abcdefghijk",
+    title: "Vídeo de teste sobre cuidados no banho",
+  };
+  section.links = [
+    { label: "Referência de teste", url: "https://example.org/care" },
+    { label: "Link inseguro de teste", url: "javascript:alert(1)" },
+  ];
+  await page.route("**/api/content", (route) =>
+    route.fulfill({ json: content }),
   );
-  return page.getByRole("article", {
-    name: "Banho do Bebê: Preparação e Segurança",
-    exact: true,
-  });
+  await page.goto(`/#topic/higiene/${section.id}`);
+  return page.getByRole("article", { name: section.title, exact: true });
 }
 
 test("a topic renders its full text, illustration, video and safe reference", async ({

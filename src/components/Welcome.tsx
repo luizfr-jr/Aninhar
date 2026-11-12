@@ -4,14 +4,21 @@ import {
   Heart,
   Sparkles,
   ShieldCheck,
+  List,
 } from "lucide-react";
-import { topics } from "../data/topics";
+import { useContent } from "../data/ContentContext";
 import { topicHref } from "../lib/navigation";
 
 export default function Welcome() {
-  const featured = ["amamentacao", "sono", "higiene"].map(
-    (id) => topics.find((topic) => topic.id === id)!,
-  );
+  const { topics } = useContent();
+  const firstTopic =
+    topics.find((topic) => topic.id === "primeirosPassos") ?? topics[0];
+  const preferredTopics = ["amamentacao", "sono", "higiene"]
+    .map((id) => topics.find((topic) => topic.id === id))
+    .filter((topic): topic is NonNullable<typeof topic> => !!topic);
+  const featured = preferredTopics.length
+    ? preferredTopics
+    : topics.slice(0, 3);
   return (
     <>
       <div className="welcome-intro">
@@ -33,10 +40,31 @@ export default function Welcome() {
             Informação e carinho para acompanhar os primeiros dois anos do seu
             bebê. Um passo de cada vez, no seu tempo.
           </p>
-          <a className="primary-button" href={topicHref("primeirosPassos")}>
-            Comece pelos primeiros dias{" "}
-            <ArrowRight size={18} aria-hidden="true" />
-          </a>
+          <div className="hero-actions">
+            {firstTopic && (
+              <a className="primary-button" href={topicHref(firstTopic.id)}>
+                {firstTopic.id === "primeirosPassos"
+                  ? "Comece pelos primeiros dias"
+                  : `Explorar ${firstTopic.name}`}
+                <ArrowRight size={18} aria-hidden="true" />
+              </a>
+            )}
+            <a
+              className="secondary-button"
+              href="#todos-os-temas"
+              onClick={(event) => {
+                event.preventDefault();
+                document
+                  .getElementById("todos-os-temas")
+                  ?.scrollIntoView({ block: "start" });
+                document
+                  .getElementById("todos-os-temas")
+                  ?.focus({ preventScroll: true });
+              }}
+            >
+              <List size={18} aria-hidden="true" /> Ver todos os temas
+            </a>
+          </div>
         </div>
         <div className="hero-art">
           <div className="logo-halo">
@@ -86,6 +114,40 @@ export default function Welcome() {
                 <span className="feature-action">
                   Explorar tema <ArrowRight size={16} aria-hidden="true" />
                 </span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+      <section
+        className="topics-directory"
+        id="todos-os-temas"
+        tabIndex={-1}
+        aria-labelledby="directory-title"
+      >
+        <h2 id="directory-title">Todos os temas</h2>
+        <p>
+          Escolha o que você precisa agora. Cada tema reúne orientações para
+          consultar no seu ritmo.
+        </p>
+        {!topics.length && (
+          <div className="info-card">
+            <h3>Estamos preparando novos conteúdos</h3>
+            <p>Volte em breve para encontrar orientações para sua família.</p>
+          </div>
+        )}
+        <div className="directory-list">
+          {topics.map((topic) => {
+            const Icon = topic.icon;
+            return (
+              <a
+                key={topic.id}
+                className="directory-link"
+                href={topicHref(topic.id)}
+              >
+                <Icon size={20} aria-hidden="true" />
+                <span>{topic.name}</span>
+                <ArrowRight size={17} aria-hidden="true" />
               </a>
             );
           })}

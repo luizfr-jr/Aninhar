@@ -1,48 +1,27 @@
-# Como editar o conteúdo do Aninhar
+# Edição de conteúdo
 
-O conteúdo fica em `src/data/topics.ts`, separado do layout. Não há template bloqueado: edite os textos, títulos e a ordem dos objetos em `topics` diretamente. O primeiro tema é **Primeiros Dias** (`primeirosPassos` é seu identificador histórico).
+A edição diária acontece em **/admin**, sem alterar código nem depender de template bloqueado. Consulte [o guia do painel](ADMIN.md).
 
-## Estrutura de cada tema
+## O que pode ser editado
 
-- `id`: identificador estável usado na navegação; não altere para preservar links.
-- `name`: nome curto no menu.
-- `title`: título completo no conteúdo.
-- `description`: apresentação do tema.
-- `icon` e `color`: aparência no menu.
-- `sections`: tópicos internos, cada um com `id`, `title`, `text` e `links`.
+- Nome, título e descrição dos temas.
+- Ordem de temas e tópicos.
+- Texto integral dos tópicos.
+- Imagem com texto alternativo e legenda.
+- Vídeo aprovado do YouTube com título.
+- Referências HTTPS.
+- Título, apresentação e blocos de Sobre e Contato; e-mail de contato opcional.
 
-Use títulos claros e textos consistentes em português. Preserve os IDs das seções ao alterar o título. Ao inserir uma seção, escolha um ID único dentro do tema, sem espaços ou acentos.
+Salvar cria/atualiza um rascunho. Abrir a prévia permite conferir texto, imagem e vídeo antes de publicar. A publicação promove a versão salva inteira para o site público.
 
-## Imagens existentes do Napkin/sistema original
+## Arquivos iniciais e dados persistentes
 
-1. Exporte a imagem autorizada para `public/images/`.
-2. Acrescente `image` à seção correspondente:
+`content/seed.json` contém os 11 temas e 79 seções originais e inicializa apenas bancos novos. Os identificadores são estáveis e usados em links como `#topic/higiene/banho-do-bebe-preparacao-e-seguranca`. Editar o título não deve mudar o identificador.
 
-```ts
-image: {
-  src: '/images/nome-do-arquivo.png',
-  alt: 'Descrição objetiva da informação mostrada na imagem.',
-  caption: 'Legenda ou crédito, quando necessário.',
-},
-```
+O contrato serializável está em `src/types/content.ts`. O servidor valida campos, tamanhos, identificadores únicos e URLs. Os dados em uso ficam em SQLite e os uploads na pasta `media` de `DATA_DIR`. Modificar o seed ou os arrays de referência não sobrescreve conteúdo já salvo pelo painel.
 
-O campo `caption` é opcional. Evite imagens com texto pequeno; mantenha o conteúdo essencial também em texto para quem usa leitor de tela. Os arquivos atuais de `public/` são logos e não substituem ilustrações educativas.
+## Material ainda necessário
 
-## Vídeos do YouTube
+O repositório original continha apenas logotipos. Ainda faltam as imagens educativas do Napkin e os links exatos dos vídeos aprovados, incluindo o banho do recém-nascido de aproximadamente 11 minutos. Envie os arquivos pela biblioteca e associe-os aos tópicos; não use links presumidos.
 
-Na seção correspondente, preencha `video` com o endereço real de um vídeo aprovado:
-
-```ts
-video: {
-  url: 'URL_REAL_DO_VIDEO_NO_YOUTUBE',
-  title: 'Título descritivo do vídeo',
-},
-```
-
-O exemplo é apenas estrutural: não o inclua no conteúdo publicado. Não há URL verificada para o vídeo de banho do recém-nascido de aproximadamente 11 minutos no repositório. Sua identificação e os arquivos do Napkin dependem do material da responsável pelo projeto.
-
-## Links e revisão
-
-Referências adicionais podem ser inseridas em `links: [{ label: 'Título da fonte', url: 'URL_REAL_DA_FONTE' }]`.
-
-A busca inclui nomes, títulos, descrições e textos; aceita termos sem acentos e independentemente de maiúsculas. Confira os pontos de revisão editorial/clínica em [CONTENT_REVIEW.md](CONTENT_REVIEW.md). A reorganização do conteúdo não significa validação clínica. Após editar, execute `npm run build` e valide navegação, busca e mídia em celular antes de publicar.
+Mantenha as orientações clínicas em texto também, para acessibilidade. Antes de publicar, confira a leitura no celular e a lista de [pontos de revisão clínica e editorial](CONTENT_REVIEW.md). A criação do painel e a reorganização visual não equivalem a validação médica.

@@ -6,7 +6,7 @@ import {
   Info,
   MessageCircle,
 } from "lucide-react";
-import { topics } from "../data/topics";
+import { useContent } from "../data/ContentContext";
 import { topicHref, type Route } from "../lib/navigation";
 
 export default function Sidebar({
@@ -16,6 +16,7 @@ export default function Sidebar({
   route: Route;
   onNavigate?: () => void;
 }) {
+  const { topics } = useContent();
   return (
     <div className="sidebar-inner">
       <a
@@ -29,7 +30,7 @@ export default function Sidebar({
           <strong>
             aninhar<span>.</span>
           </strong>
-          <small>CUIDAR, JUNTOS.</small>
+          <small>Cuidar, juntos.</small>
         </div>
       </a>
       <nav className="topic-nav" aria-label="Navegação principal">
@@ -43,7 +44,7 @@ export default function Sidebar({
           <span>Boas-vindas</span>
         </a>
         <p className="nav-label">
-          EXPLORE OS TEMAS <span>{topics.length}</span>
+          Temas do guia <span>{topics.length}</span>
         </p>
         {topics.map((topic, index) => {
           const Icon = topic.icon;
@@ -59,7 +60,7 @@ export default function Sidebar({
               <Icon size={19} aria-hidden="true" />
               <span>{topic.name}</span>
               {index === 0 ? (
-                <span className="start-tag">COMECE AQUI</span>
+                <span className="start-tag">Início</span>
               ) : (
                 <ChevronRight
                   className="nav-chevron"

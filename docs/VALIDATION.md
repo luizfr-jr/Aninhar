@@ -1,27 +1,38 @@
-# Prévia para validação — navegação por temas
+# Prévia para validação — site público e administração
 
-Esta versão propõe manter os 11 temas existentes, com **Primeiros Dias** no topo. A navegação lateral fica disponível no desktop e em uma gaveta no celular. Cada tema abre seus textos completos e um índice com acesso direto às seções.
+A versão usa a família de fontes original em todas as telas. Textos principais e campos usam 16 px, com ações e navegação legíveis, contraste e foco visível. O menu por temas continua lateral, com **Primeiros Dias** como primeiro tema inicial.
 
-## Capturas da interface
+## Capturas
 
-| Desktop | Celular |
+| Página | Prévia |
 | --- | --- |
-| [Tela inicial](previews/desktop.png) | [Tela inicial](previews/mobile.png) |
-| | [Menu lateral aberto](previews/mobile-menu.png) |
-| | [Primeiros Dias](previews/mobile-topic.png) |
+| Início público | [Desktop](previews/desktop.png) · [Celular](previews/mobile.png) |
+| Navegação pública | [Menu móvel](previews/mobile-menu.png) · [Primeiros Dias](previews/mobile-topic.png) |
+| Acesso administrativo | [Login](previews/admin-login.png) |
+| Painel inicial | [Desktop](previews/admin-desktop.png) · [Celular](previews/admin-mobile.png) |
+| Conteúdo | [Lista de temas](previews/admin-topics.png) · [Editor móvel](previews/admin-editor-mobile.png) |
+| Páginas institucionais | [Editor](previews/admin-pages.png) |
 
-## O que conferir com a responsável
+## Fluxos disponíveis
 
-- Ordem e nomenclatura dos 11 temas, especialmente **Primeiros Dias**.
-- Leitura e uso da busca no celular: experimentar “amamentacao”, “banho” e palavras que aparecem apenas no corpo de um texto.
-- Conteúdo clínico e jurídico listado em [CONTENT_REVIEW.md](CONTENT_REVIEW.md). Os textos existentes foram preservados, sem alegação de validação médica.
-- Imagens originais do Napkin e URLs exatas dos vídeos aprovados, principalmente o vídeo de banho de aproximadamente 11 minutos. A interface aceita texto, imagem, vídeo e referências por seção; a mídia real ainda precisa ser fornecida.
-- Canal de contato oficial: o formulário anterior não tinha envio; a página informa essa indisponibilidade até existir uma integração real.
+- Público: navegação, busca com consulta preservada na URL, links diretos, índice recolhível no celular, retorno ao índice e cópia de links.
+- Admin: login real, estatísticas do conteúdo, criação/edição/remoção/reordenação de temas e tópicos, textos e referências, imagens e vídeos, páginas institucionais e e-mail de contato.
+- Editorial: salvar rascunho, abrir prévia autenticada, confirmar publicação, recuperar sessão e tratar conflito de versão.
+- Armazenamento: SQLite e imagens no servidor, com volume persistente no Docker.
 
-## Escopo da verificação técnica
+## Verificação técnica
 
-Build de produção e ESLint; navegação pelos 11 temas; busca normalizada; links diretos, recarregamento e histórico; menu por toque/teclado, Escape e clique fora; larguras de 320, 375, 390, 768 e 1280 px; verificações automatizadas de acessibilidade (axe) e renderização de mídia com dados de teste isolados.
+Build de produção e ESLint passaram. Passaram 8 testes da API e 69 testes de navegador em Chromium desktop e emulação de celular (5 casos ignorados por aplicabilidade entre projetos). A imagem Docker também compilou e iniciou com sucesso: site, `/admin`, API, bloqueio de rascunho e login com cookie seguro foram verificados. Cobertura: autenticação, origem de requisição, limite de tentativas, sessão, persistência após reabrir banco, gravação/publicação, conflito de versão, limites de arquivos, upload real, prévia, estado vazio, navegação, busca, tipografia e verificação de acessibilidade axe.
 
-Os testes usam Chromium em desktop e emulação de celular. Eles não equivalem à validação clínica nem substituem a conferência final em aparelhos reais e Safari/iOS. Nenhum vídeo real foi incluído ou validado sem seu endereço confirmado.
+As larguras verificadas incluem 320, 375, 390, 768 e 1280 px no público e no admin. Emulação não substitui validação em aparelhos reais e Safari/iOS.
 
-A versão está em uma branch para revisão. Não publicar em `main` antes dessa validação: o workflow existente aciona a publicação da imagem Docker ao receber um push em `main`.
+## Antes da publicação
+
+- Validar layout e organização com a responsável.
+- Revisar os textos clínicos e jurídicos em [CONTENT_REVIEW.md](CONTENT_REVIEW.md).
+- Fornecer imagens do Napkin e links dos vídeos aprovados, principalmente o banho do recém-nascido de aproximadamente 11 minutos.
+- Configurar senha, segredo, origem HTTPS e volume persistente, conforme [ADMIN.md](ADMIN.md). Não há senha padrão.
+
+A área administrativa foi criada neste repositório. Os projetos relacionados encontrados durante a pesquisa não foram alterados. A versão exige Node/API e armazenamento persistente; hospedagem apenas estática não suporta o CMS.
+
+O PR permanece em rascunho. O workflow existente publica imagem Docker após push em `main`; nenhum merge ou deploy foi feito nesta revisão.

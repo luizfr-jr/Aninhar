@@ -75,6 +75,10 @@ test("accent-insensitive search opens the exact section and survives history and
       exact: true,
     }),
   });
+  await expect(page).toHaveURL(/#search\?q=/);
+  await page.reload();
+  await expect(search).toHaveValue("  AMAMENTACAO  ");
+  await expect(firstSection).toBeVisible();
   await firstSection.click();
   const breastfeedingArticle = page.getByRole("article", {
     name: "O Início da Amamentação",
@@ -106,6 +110,10 @@ test("accent-insensitive search opens the exact section and survives history and
   await expect(
     page.getByRole("heading", { name: "Buscar no Aninhar" }),
   ).toBeVisible();
+  await expect(search).toHaveValue("banho");
+  await page.reload();
+  await expect(search).toHaveValue("banho");
+  await expect(bathResult).toBeVisible();
   await page.goForward();
   await expect(bathArticle).toBeFocused();
 });
@@ -204,4 +212,58 @@ test("layouts fit 320, 375, 390, 768 and 1280 pixel viewports", async ({
     const toggle = page.getByRole("button", { name: "Fechar menu" });
     if (await toggle.isVisible()) await toggle.click();
   }
+});
+
+test("search from a long page keeps input focus and presents results at the top", async ({
+  page,
+}) => {
+  await page.goto("/#topic/amamentacao");
+  await page.getByRole("article").last().scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
+  const search = page.getByRole("searchbox", {
+    name: "Buscar em todos os temas",
+  });
+  await search.fill("colostro");
+  await expect(search).toBeFocused();
+  await expect(page).toHaveURL(/#search\?q=colostro$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect(
+    page.getByRole("heading", { name: "O Início da Amamentação" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Limpar busca", exact: true }).click();
+  await expect(search).toBeEmpty();
+  await expect(search).toBeFocused();
+  await expect(page).toHaveURL(/#search$/);
+  await page.getByRole("button", { name: "Vacinas", exact: true }).click();
+  await expect(search).toHaveValue("Vacinas");
+  await expect(search).toBeFocused();
+  await expect(page.getByRole("status")).toContainText("Vacinas");
+  await page.goBack();
+  await expect(page).toHaveURL(/#topic\/amamentacao$/);
+});
+
+test("unknown and malformed links offer navigation without a blank page", async ({
+  page,
+}) => {
+  for (const hash of [
+    "#admin",
+    "#topic",
+    "#topic/%E0%A4%A",
+    "#topic/sono/extra/invalid",
+  ]) {
+    await page.goto(`/${hash}`);
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Página não encontrada" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name: "Voltar ao início" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name: "Buscar conteúdo" }),
+    ).toBeVisible();
+  }
+  await page.goto("/#topic/tema-inexistente");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Tema não encontrado" }),
+  ).toBeVisible();
 });

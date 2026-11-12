@@ -4,4 +4,16 @@ services:
     container_name: aninhar
     ports:
       - "8090:80"
+    environment:
+      NODE_ENV: production
+      PORT: 80
+      DATA_DIR: /app/data
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      SESSION_SECRET: ${SESSION_SECRET:-}
+      APP_ORIGIN: ${APP_ORIGIN:-}
+    volumes:
+      - aninhar-data:/app/data
     restart: unless-stopped
+
+volumes:
+  aninhar-data:

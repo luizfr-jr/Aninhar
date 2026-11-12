@@ -22,4 +22,9 @@
 ## Estrutura do conteúdo
 
 - Navegação apenas por **temas** (sem navegação por idade na home)
-- Temas em `src/App.tsx` → array `themes` + objeto `themeContent`
+- Conteúdo ativo: SQLite via API; a equipe edita em `/admin`.
+- Conteúdo inicial em `content/seed.json`; contratos em `src/types/content.ts`.
+- Rascunhos e publicação são separados. Não expor o endpoint administrativo no site público.
+- Preservar a fonte original: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif. Não introduzir serifas nos títulos.
+- Node.js 24+; verificar `npm run build`, `npm run lint`, `npm run test:server` e `npm run test:e2e` em mudanças funcionais.
+- Não versionar credenciais, banco SQLite ou uploads. O servidor usa volume persistente; hospedagem apenas estática não executa o CMS.
