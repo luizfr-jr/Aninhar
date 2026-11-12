@@ -40,3 +40,7 @@ build/
 
 # Deploy (contém valores específicos de versão, não versionar)
 DEPLOY.md
+
+# Browser test artifacts
+test-results/
+playwright-report/
