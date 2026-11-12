@@ -153,6 +153,12 @@ test("unauthenticated preview does not expose seeded or draft content", async ({
     page.getByRole("link", { name: "Ir para a administração", exact: true }),
   ).toHaveAttribute("href", "/admin");
   await expect(
+    page.getByRole("heading", { name: "Entre para visualizar a prévia", exact: true }),
+  ).toBeFocused();
+  await expect(
+    page.getByRole("link", { name: "Ver site público", exact: true }),
+  ).toHaveAttribute("href", "/");
+  await expect(
     page.getByRole("heading", { name: "Primeiros Dias", exact: true }),
   ).toHaveCount(0);
   await expect(page.getByRole("article")).toHaveCount(0);
@@ -222,6 +228,9 @@ test("server errors stay visible instead of falling back to seed and retry recov
       exact: true,
     }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Conteúdo temporariamente indisponível", exact: true }),
+  ).toBeFocused();
   await expect(
     page.getByRole("link", { name: "Ver todos os temas", exact: true }),
   ).toHaveCount(0);

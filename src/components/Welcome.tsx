@@ -1,11 +1,4 @@
-import {
-  ArrowRight,
-  BookOpen,
-  Heart,
-  Sparkles,
-  ShieldCheck,
-  List,
-} from "lucide-react";
+import { ArrowRight, Sparkles, List } from "lucide-react";
 import { useContent } from "../data/ContentContext";
 import { topicHref } from "../lib/navigation";
 
@@ -13,32 +6,22 @@ export default function Welcome() {
   const { topics } = useContent();
   const firstTopic =
     topics.find((topic) => topic.id === "primeirosPassos") ?? topics[0];
-  const preferredTopics = ["amamentacao", "sono", "higiene"]
-    .map((id) => topics.find((topic) => topic.id === id))
-    .filter((topic): topic is NonNullable<typeof topic> => !!topic);
-  const featured = preferredTopics.length
-    ? preferredTopics
-    : topics.slice(0, 3);
   return (
     <>
       <div className="welcome-intro">
         <span className="eyebrow">
           <span className="status-dot" /> PARA PAIS, MÃES E CUIDADORES
         </span>
-        <p>Do primeiro colo às novas descobertas</p>
       </div>
       <section className="welcome-hero">
         <div className="hero-copy">
-          <span className="hero-kicker">
-            <Heart size={16} aria-hidden="true" /> Um lugar de acolhimento
-          </span>
           <h1>
             Cuidar é aprender.
             <br />E você não está <em>só.</em>
           </h1>
           <p>
-            Informação e carinho para acompanhar os primeiros dois anos do seu
-            bebê. Um passo de cada vez, no seu tempo.
+            Orientações para os primeiros dois anos do seu bebê. Encontre o
+            cuidado que precisa, no seu tempo.
           </p>
           <div className="hero-actions">
             {firstTopic && (
@@ -78,47 +61,6 @@ export default function Welcome() {
           </span>
         </div>
       </section>
-      <div className="welcome-assurance">
-        <span>
-          <BookOpen size={17} aria-hidden="true" /> Conteúdo para o dia a dia
-        </span>
-        <span>
-          <ShieldCheck size={17} aria-hidden="true" /> Cuidado desde o início
-        </span>
-        <span>
-          <Heart size={17} aria-hidden="true" /> Acolhimento para a família
-        </span>
-      </div>
-      <section className="featured-section">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">POR ONDE COMEÇAR?</span>
-            <h2>As dúvidas mudam. O apoio fica.</h2>
-          </div>
-          <span className="subtle-label">Explore no seu ritmo</span>
-        </div>
-        <div className="featured-grid">
-          {featured.map((topic) => {
-            const Icon = topic.icon;
-            return (
-              <a
-                className="feature-card"
-                href={topicHref(topic.id)}
-                key={topic.id}
-              >
-                <span className={`feature-icon feature-${topic.id}`}>
-                  <Icon size={23} aria-hidden="true" />
-                </span>
-                <h3>{topic.name}</h3>
-                <p>{topic.description}</p>
-                <span className="feature-action">
-                  Explorar tema <ArrowRight size={16} aria-hidden="true" />
-                </span>
-              </a>
-            );
-          })}
-        </div>
-      </section>
       <section
         className="topics-directory"
         id="todos-os-temas"
@@ -127,8 +69,8 @@ export default function Welcome() {
       >
         <h2 id="directory-title">Todos os temas</h2>
         <p>
-          Escolha o que você precisa agora. Cada tema reúne orientações para
-          consultar no seu ritmo.
+          Escolha um tema. Dentro dele, o índice leva direto ao assunto que
+          você precisa.
         </p>
         {!topics.length && (
           <div className="info-card">

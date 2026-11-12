@@ -4,6 +4,8 @@ import {
   ArrowRight,
   ArrowUp,
   BookOpen,
+  ChevronRight,
+  CircleHelp,
   CheckCircle2,
   Eye,
   EyeOff,
@@ -21,8 +23,8 @@ import {
   X,
 } from "lucide-react";
 import type { ContentDocument, TopicRecord } from "../types/content";
-import { safeLink, youtubeEmbed } from "../lib/navigation";
-import { AdminApiError, adminRequest, type DraftState } from "./api";
+import { validExternalUrl, validImageUrl, validVideoUrl } from "./validation";
+import { AdminApiError, adminRequest, type DraftState, type MediaItem } from "./api";
 import { formatDate, moveItem, newId } from "./utils";
 import TopicEditor from "./TopicEditor";
 import PageEditor from "./PageEditor";
@@ -45,40 +47,40 @@ function getView(): View {
   const [page, id] = window.location.hash.slice(1).split("/");
   return { page: page || "overview", id };
 }
-function validateContent(content: ContentDocument): string | null {
+type ValidationIssue = {
+  message: string;
+  view: View;
+  sectionId?: string;
+  selectedPage?: "about" | "contact";
+};
+function validateContent(content: ContentDocument): ValidationIssue | null {
   for (const topic of content.topics) {
+    const issue = (message: string, sectionId?: string): ValidationIssue => ({
+      message, view: { page: "topic", id: topic.id }, sectionId,
+    });
     if (!topic.name.trim() || !topic.title.trim())
-      return "Preencha o nome e o título de todos os temas antes de salvar.";
+      return issue("Preencha o nome e o título de todos os temas antes de salvar.");
     for (const section of topic.sections) {
       if (!section.title.trim() || !section.text.trim())
-        return `No tema “${topic.name}”, preencha o título e o texto de todos os tópicos.`;
-      if (
-        section.image &&
-        (!section.image.src.trim() || !section.image.alt.trim())
-      )
-        return `No tópico “${section.title}”, informe a imagem e sua descrição de acessibilidade.`;
-      if (
-        section.video &&
-        (!section.video.title.trim() || !youtubeEmbed(section.video.url))
-      )
-        return `No tópico “${section.title}”, informe o título e um link válido do YouTube.`;
-      if (
-        section.links.some((link) => !link.label.trim() || !safeLink(link.url))
-      )
-        return `No tópico “${section.title}”, cada referência precisa de um nome e um endereço HTTPS válido.`;
+        return issue(`No tema “${topic.name}”, preencha o título e o texto de todos os tópicos.`, section.id);
+      if (section.image && (!section.image.src.trim() || !section.image.alt.trim()))
+        return issue(`No tópico “${section.title}”, informe a imagem e sua descrição de acessibilidade.`, section.id);
+      if (section.image && !validImageUrl(section.image.src))
+        return issue(`No tópico “${section.title}”, use uma imagem da biblioteca ou um endereço HTTPS válido.`, section.id);
+      if (section.video && (!section.video.title.trim() || !validVideoUrl(section.video.url)))
+        return issue(`No tópico “${section.title}”, informe o título e um link válido do YouTube.`, section.id);
+      if (section.links.some((link) => !link.label.trim() || !validExternalUrl(link.url)))
+        return issue(`No tópico “${section.title}”, cada referência precisa de um nome e um endereço HTTPS válido.`, section.id);
     }
   }
-  for (const page of Object.values(content.pages)) {
-    if (!page.title.trim())
-      return "Preencha o título das páginas institucionais.";
-    if (
-      page.sections.some(
-        (section) => !section.title.trim() || !section.text.trim(),
-      )
-    )
-      return `Na página “${page.title}”, preencha o título e o texto de todos os blocos.`;
+  for (const selectedPage of ["about", "contact"] as const) {
+    const page = content.pages[selectedPage];
+    const issue = (message: string): ValidationIssue => ({ message, view: { page: "pages" }, selectedPage });
+    if (!page.title.trim()) return issue("Preencha o título das páginas institucionais.");
+    if (page.sections.some((section) => !section.title.trim() || !section.text.trim()))
+      return issue(`Na página “${page.title}”, preencha o título e o texto de todos os blocos.`);
     if (page.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(page.email))
-      return "Informe um e-mail de contato válido ou deixe o campo vazio.";
+      return issue("Informe um e-mail de contato válido ou deixe o campo vazio.");
   }
   return null;
 }
@@ -140,6 +142,8 @@ function Login({
                   className="adm-input"
                   id="admin-password"
                   name="password"
+                  aria-invalid={notice?.kind === "error" ? true : undefined}
+                  aria-describedby="login-password-help"
                   type={visible ? "text" : "password"}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
@@ -149,11 +153,13 @@ function Login({
                 <button
                   type="button"
                   aria-label={visible ? "Ocultar senha" : "Mostrar senha"}
+                  aria-pressed={visible}
                   onClick={() => setVisible(!visible)}
                 >
                   {visible ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              <p className="adm-help" id="login-password-help">Use a senha de acesso fornecida pela equipe responsável pelo site.</p>
             </div>
             <button
               type="submit"
@@ -223,6 +229,10 @@ function TopicsList({
           />
         </div>
       </label>
+      <div className="adm-list-heading">
+        <p role="status">{filtered.length} de {content.topics.length} temas{search ? " encontrados" : " no menu"}</p>
+        <span>As setas mudam a ordem após a publicação.</span>
+      </div>
       <div className="adm-list">
         {filtered.map((topic) => {
           const index = content.topics.indexOf(topic);
@@ -279,6 +289,7 @@ function TopicsList({
                 <a
                   href={`#topic/${encodeURIComponent(topic.id)}`}
                   className="adm-btn adm-secondary"
+                  aria-label={`Editar ${topic.name}`}
                 >
                   Editar <ArrowRight size={16} aria-hidden="true" />
                 </a>
@@ -322,6 +333,9 @@ function AdminWorkspace() {
   const [view, setView] = useState(getView);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mediaReturn, setMediaReturn] = useState<string | null>(null);
+  const [mediaTarget, setMediaTarget] = useState<{ topicId: string; sectionId: string } | null>(null);
+  const [validationIssue, setValidationIssue] = useState<ValidationIssue | null>(null);
+  const [selectedPage, setSelectedPage] = useState<"about" | "contact">("about");
   const mobileRef = useRef<HTMLDialogElement>(null);
   const mobileCloseRef = useRef<HTMLButtonElement>(null);
   const publishRef = useRef<HTMLDialogElement>(null);
@@ -503,13 +517,14 @@ function AdminWorkspace() {
   function edit(next: ContentDocument) {
     setContent(next);
     setNotice(null);
+    setValidationIssue(null);
   }
   async function save() {
     if (!content || !state) return;
     const validation = validateContent(content);
     if (validation) {
-      setNotice({ kind: "error", message: validation });
-      window.scrollTo({ top: 0 });
+      setNotice({ kind: "error", message: validation.message });
+      revealValidation(validation);
       return;
     }
     setBusy(true);
@@ -583,10 +598,49 @@ function AdminWorkspace() {
     });
     window.location.hash = "topics";
   }
-  function openMedia() {
+  function openMedia(sectionId: string) {
+    if (!view.id) return;
+    setMediaTarget({ topicId: view.id, sectionId });
     setMediaReturn(window.location.hash || "#overview");
     window.location.hash = "media";
   }
+  function useMedia(item: MediaItem) {
+    if (!content || !mediaTarget || !mediaReturn) return;
+    edit({
+      ...content,
+      topics: content.topics.map((itemTopic) => itemTopic.id === mediaTarget.topicId ? {
+        ...itemTopic,
+        sections: itemTopic.sections.map((section) => section.id === mediaTarget.sectionId ? {
+          ...section,
+          image: section.image?.src === item.url ? section.image : { src: item.url, alt: "" },
+        } : section),
+      } : itemTopic),
+    });
+    window.location.hash = mediaReturn;
+    setMediaReturn(null);
+  }
+  function revealValidation(issue: ValidationIssue) {
+    setValidationIssue({ ...issue });
+    if (issue.selectedPage) setSelectedPage(issue.selectedPage);
+    window.location.hash = `${issue.view.page}${issue.view.id ? `/${encodeURIComponent(issue.view.id)}` : ""}`;
+  }
+  const focusValidation = useCallback((issue: ValidationIssue) => {
+    const scope = issue.sectionId ? document.getElementById(`edit-${issue.sectionId}`) : mainRef.current;
+    scope?.querySelectorAll("details").forEach((detail) => { detail.open = true; });
+    if (scope instanceof HTMLDetailsElement) scope.open = true;
+    window.dispatchEvent(new Event("aninhar:validate"));
+    requestAnimationFrame(() => {
+      const field = scope?.querySelector<HTMLElement>('[aria-invalid="true"], input:invalid, textarea:invalid');
+      const target = field ?? scope?.querySelector<HTMLElement>("summary, input, textarea") ?? mainRef.current;
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ block: "center", behavior: "auto" });
+    });
+  }, []);
+  useEffect(() => {
+    if (!validationIssue || view.page !== validationIssue.view.page || view.id !== validationIssue.view.id) return;
+    const frame = requestAnimationFrame(() => focusValidation(validationIssue));
+    return () => cancelAnimationFrame(frame);
+  }, [validationIssue, view, selectedPage, focusValidation]);
   const topic = content?.topics.find((item) => item.id === view.id);
   const topicCount = content?.topics.length ?? 0;
   const sectionCount =
@@ -609,6 +663,7 @@ function AdminWorkspace() {
           <small>Administração do conteúdo</small>
         </div>
       </a>
+      <p className="adm-nav-caption">SEU ESPAÇO DE TRABALHO</p>
       <nav className="adm-nav" aria-label="Administração">
         {navigation.map((item) => {
           const Icon = item.icon;
@@ -707,11 +762,15 @@ function AdminWorkspace() {
               aria-haspopup="dialog"
               onClick={() => setMobileOpen(true)}
             >
-              <Menu size={23} />
+              <Menu size={20} aria-hidden="true" />
+              <span>Menu</span>
             </button>
             <div>
-              <strong>Gestão de conteúdo</strong>
-              <span className="adm-saving" role="status">
+              <strong className="adm-breadcrumb">
+                <a href="#overview">Painel</a><ChevronRight size={14} aria-hidden="true" />
+                <span>{view.page === "topic" ? topic?.name ?? "Tema" : navigation.find((item) => item.page === view.page)?.name ?? "Gestão de conteúdo"}</span>
+              </strong>
+              <span className="adm-saving" role="status" data-state={busy ? "busy" : dirty ? "unsaved" : published ? "published" : "draft"}>
                 {busy
                   ? "Aguarde…"
                   : dirty
@@ -733,11 +792,15 @@ function AdminWorkspace() {
             <button
               className="adm-btn adm-primary"
               disabled={dirty || busy || !state || published}
+              aria-describedby="publish-guidance"
               onClick={() => publishRef.current?.showModal()}
             >
               <Send size={17} aria-hidden="true" /> Publicar
             </button>
           </div>
+          <span className="adm-sr-only" id="publish-guidance">
+            {dirty ? "Salve o rascunho antes de publicar." : published ? "As alterações salvas já estão publicadas." : "Publicar torna o rascunho salvo visível no site."}
+          </span>
         </header>
         <main
           id="admin-content"
@@ -751,6 +814,11 @@ function AdminWorkspace() {
               className={`adm-alert adm-${notice.kind}`}
             >
               <span>{notice.message}</span>
+              {validationIssue && (
+                <button className="adm-btn adm-secondary" onClick={() => revealValidation(validationIssue)}>
+                  Ir ao campo <ArrowRight size={16} aria-hidden="true" />
+                </button>
+              )}
               {notice.conflict && (
                 <button
                   className="adm-btn adm-secondary"
@@ -822,89 +890,78 @@ function AdminWorkspace() {
                       </p>
                     </div>
                   </header>
-                  <div className="adm-metrics">
-                    <section className="adm-metric">
-                      <BookOpen size={23} aria-hidden="true" />
-                      <strong>{topicCount}</strong>
-                      <span>Temas no menu</span>
+                  <div className="adm-overview-layout">
+                    <section className="adm-card adm-publication-card" aria-labelledby="publication-status-title">
+                      <div className="adm-card-header">
+                        <div>
+                          <p className="adm-eyebrow">SITUAÇÃO DO CONTEÚDO</p>
+                          <h2 id="publication-status-title">
+                            {dirty ? "Há alterações para salvar" : published ? "O site está atualizado" : "Há um rascunho para revisar"}
+                          </h2>
+                        </div>
+                        <span className={`adm-badge ${dirty ? "is-warning" : published ? "is-success" : ""}`}>
+                          {dirty ? "Não salvo" : published ? "Publicado" : "Rascunho"}
+                        </span>
+                      </div>
+                      <p>
+                        {dirty ? "Suas últimas edições estão apenas nesta janela. Salve para guardá-las e conferir a prévia." : published ? "O conteúdo salvo é o mesmo que as famílias veem no site." : "O rascunho está guardado. Confira a prévia antes de torná-lo público."}
+                      </p>
+                      <ol className="adm-workflow" aria-label="Etapas de atualização do conteúdo">
+                        <li className={dirty ? "is-current" : "is-done"}><span aria-hidden="true">1</span> Editar e salvar</li>
+                        <li className={!dirty && !published ? "is-current" : published && !dirty ? "is-done" : ""}><span aria-hidden="true">2</span> Conferir a prévia</li>
+                        <li className={published && !dirty ? "is-done" : ""}><span aria-hidden="true">3</span> Publicar</li>
+                      </ol>
+                      <div className="adm-status-dates">
+                        <p><strong>Último salvamento</strong><br />{formatDate(state?.updatedAt)}</p>
+                        <p><strong>Última publicação</strong><br />{formatDate(state?.publishedAt)}</p>
+                      </div>
+                      <div className="adm-actions">
+                        <button
+                          className="adm-btn adm-secondary"
+                          disabled={dirty}
+                          aria-describedby={dirty ? "overview-preview-help" : undefined}
+                          onClick={() => window.open("/?preview=1", "_blank", "noopener,noreferrer")}
+                        ><Eye size={17} aria-hidden="true" /> Abrir prévia</button>
+                        <a className="adm-btn adm-quiet" href="/" target="_blank" rel="noreferrer">
+                          Ver site público <ArrowRight size={17} aria-hidden="true" />
+                        </a>
+                      </div>
+                      {dirty && <p className="adm-help" id="overview-preview-help">A prévia fica disponível depois de salvar o rascunho.</p>}
                     </section>
-                    <section className="adm-metric">
-                      <FileText size={23} aria-hidden="true" />
-                      <strong>{sectionCount}</strong>
-                      <span>Tópicos de orientação</span>
-                    </section>
-                    <section className="adm-metric">
-                      <Image size={23} aria-hidden="true" />
-                      <strong>{mediaCount}</strong>
-                      <span>Tópicos com imagem ou vídeo</span>
+                    <section className="adm-card adm-task-card" aria-labelledby="admin-tasks-title">
+                      <h2 id="admin-tasks-title">O que você quer atualizar?</h2>
+                      <p>Escolha uma tarefa para começar.</p>
+                      <a className="adm-task-link" href="#topics">
+                        <BookOpen size={22} aria-hidden="true" />
+                        <span><strong>Editar temas</strong><small>Textos, vídeos e ordem do menu</small></span>
+                        <ChevronRight size={18} aria-hidden="true" />
+                      </a>
+                      <a className="adm-task-link" href="#media">
+                        <Image size={22} aria-hidden="true" />
+                        <span><strong>Adicionar imagens</strong><small>Enviar e encontrar ilustrações</small></span>
+                        <ChevronRight size={18} aria-hidden="true" />
+                      </a>
+                      <a className="adm-task-link" href="#pages">
+                        <FileText size={22} aria-hidden="true" />
+                        <span><strong>Atualizar Sobre e Contato</strong><small>Apresentação e informações da equipe</small></span>
+                        <ChevronRight size={18} aria-hidden="true" />
+                      </a>
                     </section>
                   </div>
-                  <section className="adm-card adm-stack">
-                    <div className="adm-card-header">
-                      <h2>
-                        {published
-                          ? "O site está atualizado"
-                          : "Há um rascunho para revisar"}
-                      </h2>
-                      <span className="adm-badge">Versão {state?.version}</span>
-                    </div>
-                    <p>
-                      {published
-                        ? "O conteúdo salvo é o mesmo que as famílias veem no site."
-                        : "O conteúdo salvo no painel pode ser conferido na prévia antes da publicação."}
-                    </p>
-                    <div className="adm-status-dates">
-                      <p>
-                        <strong>Último salvamento</strong>
-                        <br />
-                        {formatDate(state?.updatedAt)}
-                      </p>
-                      <p>
-                        <strong>Última publicação</strong>
-                        <br />
-                        {formatDate(state?.publishedAt)}
-                      </p>
-                    </div>
-                    <div className="adm-actions">
-                      <a className="adm-btn adm-primary" href="#topics">
-                        Editar temas <ArrowRight size={17} aria-hidden="true" />
-                      </a>
-                      <button
-                        className="adm-btn adm-secondary"
-                        disabled={dirty}
-                        onClick={() =>
-                          window.open(
-                            "/?preview=1",
-                            "_blank",
-                            "noopener,noreferrer",
-                          )
-                        }
-                      >
-                        <Eye size={17} aria-hidden="true" /> Abrir prévia
-                      </button>
-                    </div>
-                  </section>
-                  <section className="adm-card adm-stack">
-                    <h2>Como atualizar o site</h2>
+                  <div className="adm-metrics" aria-label="Resumo do conteúdo">
+                    <section className="adm-metric"><BookOpen size={22} aria-hidden="true" /><strong>{topicCount}</strong><span>Temas no menu</span></section>
+                    <section className="adm-metric"><FileText size={22} aria-hidden="true" /><strong>{sectionCount}</strong><span>Tópicos de orientação</span></section>
+                    <section className="adm-metric"><Image size={22} aria-hidden="true" /><strong>{mediaCount}</strong><span>Tópicos com imagem ou vídeo</span></section>
+                  </div>
+                  <details className="adm-guide">
+                    <summary><CircleHelp size={20} aria-hidden="true" /> Como atualizar o site <ChevronRight size={18} aria-hidden="true" /></summary>
                     <ol className="adm-steps">
-                      <li>
-                        <strong>Edite e organize.</strong> Atualize os temas, os
-                        textos e as imagens nas páginas do painel.
-                      </li>
-                      <li>
-                        <strong>Salve o rascunho.</strong> As alterações ficam
-                        guardadas sem mudar o site público.
-                      </li>
-                      <li>
-                        <strong>Revise a prévia.</strong> Confira a leitura e
-                        peça validação clínica dos textos quando necessário.
-                      </li>
-                      <li>
-                        <strong>Publique.</strong> A versão revisada passa a
-                        aparecer para as famílias.
-                      </li>
+                      <li><strong>Edite e organize.</strong> Atualize os temas, os textos e as imagens.</li>
+                      <li><strong>Salve o rascunho.</strong> Guarde as alterações sem mudar o site público.</li>
+                      <li><strong>Revise a prévia.</strong> Confira a leitura e peça a revisão clínica necessária.</li>
+                      <li><strong>Publique.</strong> Disponibilize a versão revisada para as famílias.</li>
                     </ol>
-                  </section>
+                  </details>
                 </>
               )}
               {view.page === "topics" && (
@@ -930,6 +987,7 @@ function AdminWorkspace() {
                     onDelete={() => removeTopic(topic)}
                     canPreview={!dirty}
                     onMedia={openMedia}
+                    initialSectionId={mediaTarget?.topicId === topic.id ? mediaTarget.sectionId : undefined}
                   />
                 ) : (
                   <section className="adm-empty">
@@ -943,6 +1001,7 @@ function AdminWorkspace() {
               {view.page === "media" && (
                 <MediaLibrary
                   onError={handleError}
+                  onSelect={mediaReturn && mediaTarget ? useMedia : undefined}
                   onReturn={
                     mediaReturn
                       ? () => {
@@ -956,6 +1015,8 @@ function AdminWorkspace() {
               {view.page === "pages" && (
                 <PageEditor
                   pages={content.pages}
+                  selectedPage={selectedPage}
+                  onPageChange={setSelectedPage}
                   onChange={(pages) => edit({ ...content, pages })}
                 />
               )}

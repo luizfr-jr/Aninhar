@@ -1,10 +1,10 @@
 import {
-  ArrowUpRight,
   ChevronRight,
   Heart,
   House,
   Info,
   MessageCircle,
+  Search,
 } from "lucide-react";
 import { useContent } from "../data/ContentContext";
 import { topicHref, type Route } from "../lib/navigation";
@@ -43,6 +43,15 @@ export default function Sidebar({
           <House size={19} aria-hidden="true" />
           <span>Boas-vindas</span>
         </a>
+        <a
+          className={`nav-link${route.page === "search" ? " active" : ""}`}
+          aria-current={route.page === "search" ? "page" : undefined}
+          href="#search"
+          onClick={onNavigate}
+        >
+          <Search size={19} aria-hidden="true" />
+          <span>Buscar uma orientação</span>
+        </a>
         <p className="nav-label">
           Temas do guia <span>{topics.length}</span>
         </p>
@@ -60,7 +69,7 @@ export default function Sidebar({
               <Icon size={19} aria-hidden="true" />
               <span>{topic.name}</span>
               {index === 0 ? (
-                <span className="start-tag">Início</span>
+                <span className="start-tag">Comece aqui</span>
               ) : (
                 <ChevronRight
                   className="nav-chevron"
@@ -87,8 +96,7 @@ export default function Sidebar({
             onClick={onNavigate}
             aria-current={route.page === "about" ? "page" : undefined}
           >
-            <Info size={16} aria-hidden="true" /> Sobre o Aninhar{" "}
-            <ArrowUpRight size={14} aria-hidden="true" />
+            <Info size={16} aria-hidden="true" /> Sobre o Aninhar
           </a>
           <a
             href="#contact"
