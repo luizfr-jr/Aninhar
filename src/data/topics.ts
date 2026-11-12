@@ -13,41 +13,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-export interface TopicImage {
-  src: string;
-  alt: string;
-  caption?: string;
-}
+import type { TopicRecord, TopicSection } from "../types/content";
+export type { TopicImage, TopicVideo, TopicLink, TopicSection } from "../types/content";
 
-export interface TopicVideo {
-  /** Link original do YouTube, por exemplo https://www.youtube.com/watch?v=ID. */
-  url: string;
-  title: string;
-}
-
-export interface TopicLink {
-  label: string;
-  url: string;
-}
-
-export interface TopicSection {
-  /** Mantenha o id ao editar títulos para preservar os links diretos. */
-  id: string;
-  title: string;
-  text: string;
-  links: TopicLink[];
-  image?: TopicImage;
-  video?: TopicVideo;
-}
-
-export interface Topic {
-  id: string;
-  name: string;
-  title: string;
-  description: string;
+export interface Topic extends TopicRecord {
   icon: LucideIcon;
   color: string;
-  sections: TopicSection[];
 }
 
 /** A ordem deste array define a ordem no menu. Conteúdo livremente editável. */
@@ -674,11 +645,11 @@ function excerptAroundMatch(text: string, terms: string[]): string {
 }
 
 /** All words must match, regardless of accents/case or their order. */
-export function searchTopics(query: string): TopicSearchResult[] {
+export function searchTopics(query: string, catalog: Topic[] = topics): TopicSearchResult[] {
   const terms = normalizeSearch(query).split(/\s+/).filter(Boolean);
   if (!terms.length) return [];
 
-  return topics
+  return catalog
     .flatMap((topic) => {
       const title = normalizeSearch(`${topic.name} ${topic.title}`);
       const metadata = normalizeSearch(

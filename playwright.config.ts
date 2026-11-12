@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests",
+  testMatch: "**/*.spec.ts",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
@@ -27,9 +28,17 @@ export default defineConfig({
       use: { ...devices["iPhone 13"], defaultBrowserType: "chromium" },
     },
   ],
-  webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 4173 --strictPort",
-    url: "http://127.0.0.1:4173",
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      command: "node scripts/e2e-api.mjs",
+      url: "http://127.0.0.1:4301/api/auth/session",
+      reuseExistingServer: false,
+    },
+    {
+      command: "npm run dev:ui -- --host 127.0.0.1 --port 4173 --strictPort",
+      env: { API_TARGET: "http://127.0.0.1:4301" },
+      url: "http://127.0.0.1:4173",
+      reuseExistingServer: false,
+    },
+  ],
 });

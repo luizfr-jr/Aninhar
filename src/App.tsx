@@ -11,94 +11,141 @@ import {
 import Sidebar from "./components/Sidebar";
 import TopicReader from "./components/TopicReader";
 import Welcome from "./components/Welcome";
-import { searchTopics, topics } from "./data/topics";
-import { readRoute, topicHref } from "./lib/navigation";
+import { searchTopics } from "./data/topics";
+import { ContentProvider } from "./data/ContentProvider";
+import { useContent } from "./data/ContentContext";
+import { readRoute, searchHref, topicHref } from "./lib/navigation";
 
 function About({ contact = false }: { contact?: boolean }) {
+  const { pages, topics } = useContent();
+  const page = contact ? pages.contact : pages.about;
+  const firstTopic =
+    topics.find((topic) => topic.id === "primeirosPassos") ?? topics[0];
+  const email = page.email?.trim();
+  const validEmail = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   return (
     <div className="reading-page">
       <a className="back-link" href="#home">
-        <ArrowLeft size={16} aria-hidden="true" /> Início
+        <ArrowLeft size={16} aria-hidden="true" /> Voltar ao início
       </a>
       <header className="page-heading">
-        <span className="eyebrow">FEITO PARA ACOLHER</span>
-        <h1>{contact ? "Contato" : "Sobre o Aninhar"}</h1>
-        <p>Um ambiente de informação para famílias.</p>
+        <span className="eyebrow">
+          {contact ? "ORIENTAÇÃO E CONTATO" : "CONHEÇA O PROJETO"}
+        </span>
+        <h1>{page.title}</h1>
+        <p>{page.intro}</p>
       </header>
-      {contact ? (
+      {page.sections.map((section) => (
+        <section
+          key={section.id}
+          className="info-card"
+          aria-labelledby={`page-${section.id}`}
+        >
+          <h2 id={`page-${section.id}`}>{section.title}</h2>
+          {section.text.split(/\n\s*\n/).map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </section>
+      ))}
+      {contact && validEmail && (
         <section className="info-card">
-          <h2>Vamos cuidar dessa conversa</h2>
+          <h2>Contato por e-mail</h2>
           <p>
-            O canal de contato do projeto ainda não está disponível neste site.
-            Para dúvidas sobre a saúde do bebê, procure a equipe de saúde que
-            acompanha sua família.
+            Use seu aplicativo de e-mail para falar com a equipe do projeto.
           </p>
-          <a className="text-link" href="#about">
-            Conheça o projeto <ArrowRight size={16} aria-hidden="true" />
+          <a className="text-link" href={`mailto:${email}`}>
+            {email}
           </a>
         </section>
-      ) : (
-        <>
-          <section className="info-card">
-            <h2>Conhecimento que acolhe</h2>
-            <p>
-              O Projeto Aninhar é fruto de um trabalho de Mestrado ligado ao
-              Programa de Pós-Graduação em Saúde Materno Infantil da
-              Universidade Franciscana (UFN), desenvolvido por uma pediatra e
-              mestranda.
-            </p>
-            <p>
-              Gratuito e disponível para famílias de todo o Brasil, o projeto
-              tem um vínculo especial com a Maternidade Santa Isabel do Hospital
-              Casa de Saúde, em Santa Maria/RS. Nasce do desejo de facilitar a
-              transição dos pais para casa com seu bebê.
-            </p>
-          </section>
-          <section className="info-card">
-            <h2>Nossa missão</h2>
-            <p>
-              Simplificar a jornada de cuidados com o bebê e apoiar mães, pais e
-              cuidadores com informações acessíveis para os primeiros dois anos
-              de vida.
-            </p>
-            <p>
-              Explore os temas, leia as orientações e converse com a equipe de
-              saúde sobre as necessidades da sua família.
-            </p>
-          </section>
-          <aside className="care-note">
-            <BookOpen size={20} aria-hidden="true" />
-            <p>
-              As informações têm caráter educativo e não substituem a avaliação
-              de um profissional de saúde.
-            </p>
-          </aside>
-        </>
       )}
+      <div className="page-actions">
+        {firstTopic && (
+          <a className="primary-button" href={topicHref(firstTopic.id)}>
+            {firstTopic.id === "primeirosPassos"
+              ? contact
+                ? "Consultar primeiros cuidados"
+                : "Explorar os primeiros dias"
+              : `Explorar ${firstTopic.name}`}
+            <ArrowRight size={16} aria-hidden="true" />
+          </a>
+        )}
+        <a className="secondary-button" href={contact ? "#about" : "#search"}>
+          {contact ? "Conhecer o projeto" : "Buscar uma orientação"}
+        </a>
+      </div>
+      <aside className="care-note">
+        <BookOpen size={20} aria-hidden="true" />
+        <p>
+          As informações têm caráter educativo e não substituem a avaliação de
+          um profissional de saúde. Converse com a equipe que acompanha sua
+          família sobre as necessidades do seu bebê.
+        </p>
+      </aside>
     </div>
   );
 }
 
-export default function App() {
+function UnavailablePage({ topic = false }: { topic?: boolean }) {
+  return (
+    <div className="empty-state">
+      <img src="/aninhar-logo.jpg" alt="Aninhar" />
+      <h1>{topic ? "Tema não encontrado" : "Página não encontrada"}</h1>
+      <p>
+        Este endereço não corresponde a uma página disponível. Volte ao início
+        ou use a busca para encontrar o conteúdo que procura.
+      </p>
+      <div className="page-actions">
+        <a href="#home" className="primary-button">
+          Voltar ao início <ArrowRight size={16} aria-hidden="true" />
+        </a>
+        <a href="#search" className="secondary-button">
+          Buscar conteúdo
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function PublicApp() {
+  const { topics, pages } = useContent();
   const [route, setRoute] = useState(readRoute);
-  const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeMenuRef = useRef<HTMLButtonElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const topic = topics.find((item) => item.id === route.topicId);
-  const results = route.page === "search" ? searchTopics(query) : [];
+  const query = route.page === "search" ? (route.query ?? "") : "";
+  const results = route.page === "search" ? searchTopics(query, topics) : [];
+  const pageLabel =
+    route.page === "topic"
+      ? (topic?.name ?? "Tema não encontrado")
+      : route.page === "search"
+        ? "Buscar conteúdo"
+        : route.page === "about"
+          ? pages.about.title
+          : route.page === "contact"
+            ? pages.contact.title
+            : route.page === "not-found"
+              ? "Página não encontrada"
+              : "Início";
 
   useEffect(() => {
-    const onHashChange = () => setRoute(readRoute());
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
+    const onLocationChange = () => setRoute(readRoute());
+    window.addEventListener("hashchange", onLocationChange);
+    return () => window.removeEventListener("hashchange", onLocationChange);
   }, []);
 
   useEffect(() => {
-    document.title = `${route.page === "topic" && topic ? topic.name : route.page === "search" ? "Buscar" : route.page === "about" ? "Sobre" : route.page === "contact" ? "Contato" : "Cuidar, juntos"} | Aninhar`;
-    if (route.page === "search") return;
+    document.title = `${pageLabel} | Aninhar`;
+    if (route.page === "search") {
+      // Keep typing uninterrupted, including on mobile keyboards.
+      if (document.activeElement !== searchRef.current) {
+        mainRef.current?.focus({ preventScroll: true });
+      }
+      window.scrollTo({ top: 0 });
+      return;
+    }
     const target =
       route.page === "topic" && route.sectionId
         ? document.getElementById(route.sectionId)
@@ -106,7 +153,7 @@ export default function App() {
     (target ?? mainRef.current)?.focus({ preventScroll: true });
     if (target) target.scrollIntoView({ block: "start" });
     else window.scrollTo({ top: 0 });
-  }, [route, topic]);
+  }, [route, pageLabel]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -130,8 +177,17 @@ export default function App() {
   }, [menuOpen]);
 
   function changeSearch(value: string) {
-    setQuery(value);
-    if (route.page !== "search") window.location.hash = "search";
+    const href = searchHref(value);
+    // One history entry per search visit; typing must not flood browser history.
+    if (readRoute().page === "search")
+      window.history.replaceState(null, "", href);
+    else window.history.pushState(null, "", href);
+    setRoute(readRoute());
+  }
+
+  function chooseSearchSuggestion(value: string) {
+    changeSearch(value);
+    searchRef.current?.focus({ preventScroll: true });
   }
 
   return (
@@ -188,21 +244,11 @@ export default function App() {
           >
             aninhar<span>.</span>
           </a>
-          <div className="breadcrumb">
-            <span>Aninhar</span>
+          <nav className="breadcrumb" aria-label="Localização na página">
+            <a href="#home">Aninhar</a>
             <ChevronRight size={13} aria-hidden="true" />
-            <strong>
-              {route.page === "topic" && topic
-                ? topic.name
-                : route.page === "search"
-                  ? "Busca"
-                  : route.page === "about"
-                    ? "Sobre"
-                    : route.page === "contact"
-                      ? "Contato"
-                      : "Boas-vindas"}
-            </strong>
-          </div>
+            <strong aria-current="page">{pageLabel}</strong>
+          </nav>
           <form
             className="search-box"
             role="search"
@@ -212,11 +258,10 @@ export default function App() {
               searchRef.current?.focus();
             }}
           >
-            <Search size={18} aria-hidden="true" />
             <input
               ref={searchRef}
               aria-label="Buscar em todos os temas"
-              placeholder="O que você quer saber?"
+              placeholder="Buscar: banho, sono, vacinas…"
               value={query}
               onChange={(event) => changeSearch(event.target.value)}
               type="search"
@@ -233,6 +278,13 @@ export default function App() {
                 <X size={16} />
               </button>
             )}
+            <button
+              type="submit"
+              className="search-submit"
+              aria-label="Buscar conteúdo"
+            >
+              <Search size={20} aria-hidden="true" />
+            </button>
           </form>
         </header>
         <main
@@ -250,15 +302,9 @@ export default function App() {
                 sectionId={route.sectionId}
               />
             ) : (
-              <div className="empty-state">
-                <img src="/aninhar-logo.jpg" alt="Aninhar" />
-                <h1>Tema não encontrado</h1>
-                <p>Escolha um dos temas no menu para continuar.</p>
-                <a href="#home" className="primary-button">
-                  Ir para o início <ArrowRight size={16} />
-                </a>
-              </div>
+              <UnavailablePage topic />
             ))}
+          {route.page === "not-found" && <UnavailablePage />}
           {route.page === "about" && <About />}
           {route.page === "contact" && <About contact />}
           {route.page === "search" && (
@@ -268,11 +314,32 @@ export default function App() {
                 <h1>Buscar no Aninhar</h1>
                 <p>Pesquise em todos os temas, títulos e orientações.</p>
               </header>
-              <p role="status" className="search-summary">
+              <p
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                className="search-summary"
+              >
                 {!query.trim()
                   ? "Digite uma palavra na busca para começar."
                   : `${results.length} resultado${results.length !== 1 ? "s" : ""} para “${query}”`}
               </p>
+              {!query.trim() && (
+                <div
+                  className="search-suggestions"
+                  aria-label="Sugestões de busca"
+                >
+                  {["Amamentação", "Banho", "Sono", "Vacinas"].map((term) => (
+                    <button
+                      className="secondary-button"
+                      key={term}
+                      onClick={() => chooseSearchSuggestion(term)}
+                    >
+                      {term}
+                    </button>
+                  ))}
+                </div>
+              )}
               {results.length ? (
                 <div className="search-results">
                   {results.map((result) => (
@@ -343,9 +410,18 @@ export default function App() {
               Evangelho Mota
             </p>
             <p>NinMa Hub · Universidade Franciscana (UFN) · Oryum Tech</p>
+            <a href="/admin">Administração</a>
           </div>
         </footer>
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ContentProvider>
+      <PublicApp />
+    </ContentProvider>
   );
 }

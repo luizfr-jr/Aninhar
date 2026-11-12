@@ -44,3 +44,9 @@ DEPLOY.md
 # Browser test artifacts
 test-results/
 playwright-report/
+
+# Persistent CMS data and uploaded images
+/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

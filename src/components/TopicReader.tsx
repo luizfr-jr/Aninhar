@@ -6,8 +6,11 @@ import {
   ExternalLink,
   Play,
   ImageOff,
+  ArrowUp,
+  Link,
 } from "lucide-react";
-import { topics, type Topic, type TopicSection } from "../data/topics";
+import { type Topic, type TopicSection } from "../data/topics";
+import { useContent } from "../data/ContentContext";
 import { safeLink, topicHref, youtubeEmbed } from "../lib/navigation";
 
 function SectionMedia({ section }: { section: TopicSection }) {
@@ -80,8 +83,56 @@ export default function TopicReader({
   topic: Topic;
   sectionId?: string;
 }) {
+  const { topics } = useContent();
+  const [indexOpen, setIndexOpen] = useState(() => window.innerWidth >= 700);
+  const [copyMessage, setCopyMessage] = useState("");
+  function returnToIndex() {
+    setIndexOpen(true);
+    requestAnimationFrame(() => {
+      const index = document.getElementById("topic-index");
+      index?.scrollIntoView({ block: "start" });
+      index?.querySelector("summary")?.focus({ preventScroll: true });
+    });
+  }
+  async function copySectionLink(id: string) {
+    const url = new URL(window.location.href);
+    url.hash = topicHref(topic.id, id);
+    try {
+      await navigator.clipboard.writeText(url.href);
+      setCopyMessage("Link copiado. Você já pode compartilhá-lo.");
+    } catch {
+      setCopyMessage(
+        "Não foi possível copiar. Abra o tópico e copie o endereço do navegador.",
+      );
+    }
+  }
   const Icon = topic.icon;
-  const next = topics[(topics.indexOf(topic) + 1) % topics.length];
+  const next =
+    topics[
+      (topics.findIndex((item) => item.id === topic.id) + 1) % topics.length
+    ];
+  if (!topic.sections.length)
+    return (
+      <div className="reading-page">
+        <a className="back-link" href="#home">
+          <ArrowLeft size={16} aria-hidden="true" /> Início
+        </a>
+        <header className="page-heading">
+          <h1>{topic.name}</h1>
+          <p>{topic.description}</p>
+        </header>
+        <section className="info-card">
+          <h2>Conteúdo em preparação</h2>
+          <p>
+            Estamos organizando as orientações deste tema. Você pode explorar os
+            outros assuntos do guia enquanto isso.
+          </p>
+          <a className="secondary-button" href="#home">
+            Ver outros temas
+          </a>
+        </section>
+      </div>
+    );
   return (
     <div className="reading-page">
       <a className="back-link" href="#home">
@@ -100,26 +151,52 @@ export default function TopicReader({
             <Icon size={32} aria-hidden="true" />
           </span>
         </div>
-        <span className="reading-meta">
-          {topic.sections.length} tópicos · Leia no seu ritmo
-        </span>
-      </header>
-      <nav className="section-index" aria-label="Neste tema">
-        <h2>Neste tema</h2>
-        <div>
-          {topic.sections.map((section, index) => (
-            <a
-              key={section.id}
-              href={topicHref(topic.id, section.id)}
-              aria-current={sectionId === section.id ? "location" : undefined}
-            >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              {section.title}
-              <ArrowRight size={14} aria-hidden="true" />
-            </a>
-          ))}
+        <div className="reader-tools">
+          <span className="reading-meta">
+            {topic.sections.length} tópicos · Leia no seu ritmo
+          </span>
+          <button className="text-button" onClick={returnToIndex}>
+            Ver índice do tema <ArrowRight size={16} aria-hidden="true" />
+          </button>
         </div>
+      </header>
+      <nav aria-label="Neste tema">
+        <details
+          id="topic-index"
+          className="section-index"
+          open={indexOpen}
+          onToggle={(event) => setIndexOpen(event.currentTarget.open)}
+        >
+          <summary>
+            Neste tema{" "}
+            <small>{topic.sections.length} tópicos para consultar</small>
+          </summary>
+          <div>
+            {topic.sections.map((section, index) => (
+              <a
+                key={section.id}
+                onClick={() => {
+                  if (window.innerWidth < 700) setIndexOpen(false);
+                  requestAnimationFrame(() => {
+                    const article = document.getElementById(section.id);
+                    article?.focus({ preventScroll: true });
+                    article?.scrollIntoView({ block: "start" });
+                  });
+                }}
+                href={topicHref(topic.id, section.id)}
+                aria-current={sectionId === section.id ? "location" : undefined}
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                {section.title}
+                <ArrowRight size={14} aria-hidden="true" />
+              </a>
+            ))}
+          </div>
+        </details>
       </nav>
+      <p className="copy-status" role="status">
+        {copyMessage}
+      </p>
       <div className="articles">
         {topic.sections.map((section, index) => (
           <article
@@ -136,6 +213,17 @@ export default function TopicReader({
               <h2 id={`${section.id}-heading`}>{section.title}</h2>
               <p>{section.text}</p>
               <SectionMedia section={section} />
+              <div className="article-actions">
+                <button onClick={returnToIndex}>
+                  <ArrowUp size={15} aria-hidden="true" /> Voltar ao índice
+                </button>
+                <button
+                  onClick={() => copySectionLink(section.id)}
+                  aria-label={`Copiar link para ${section.title}`}
+                >
+                  <Link size={15} aria-hidden="true" /> Copiar link
+                </button>
+              </div>
             </div>
           </article>
         ))}
@@ -147,13 +235,15 @@ export default function TopicReader({
           substitui a avaliação de um profissional de saúde.
         </p>
       </aside>
-      <a className="next-topic" href={topicHref(next.id)}>
-        <div>
-          <span>CONTINUE EXPLORANDO</span>
-          <strong>{next.name}</strong>
-        </div>
-        <ArrowRight size={22} aria-hidden="true" />
-      </a>
+      {next && (
+        <a className="next-topic" href={topicHref(next.id)}>
+          <div>
+            <span>CONTINUE EXPLORANDO</span>
+            <strong>{next.name}</strong>
+          </div>
+          <ArrowRight size={22} aria-hidden="true" />
+        </a>
+      )}
     </div>
   );
 }
