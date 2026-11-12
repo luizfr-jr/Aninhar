@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ExternalLink, Plus, Trash2 } from "lucide-react";
 import type { ContentDocument, PageRecord } from "../types/content";
 import { Field } from "./fields";
 import { moveItem, newId } from "./utils";
@@ -9,11 +9,13 @@ export default function PageEditor({
   onChange,
   selectedPage,
   onPageChange,
+  canPreview = true,
 }: {
   pages: ContentDocument["pages"];
   onChange: (pages: ContentDocument["pages"]) => void;
   selectedPage?: "about" | "contact";
   onPageChange?: (page: "about" | "contact") => void;
+  canPreview?: boolean;
 }) {
   const [selected, setSelected] = useState<"about" | "contact">(selectedPage ?? "about");
   const addButton = useRef<HTMLButtonElement>(null);
@@ -54,6 +56,18 @@ export default function PageEditor({
             Mantenha as informações institucionais e os canais de contato
             atualizados.
           </p>
+        </div>
+        <div className="adm-page-preview">
+          <button
+            className="adm-btn adm-secondary"
+            type="button"
+            disabled={!canPreview}
+            aria-describedby={!canPreview ? "page-preview-help" : undefined}
+            onClick={() => window.open(`/?preview=1#${selected}`, "_blank", "noopener,noreferrer")}
+          >
+            Ver prévia da página <ExternalLink size={16} aria-hidden="true" />
+          </button>
+          {!canPreview && <p className="adm-help" id="page-preview-help">Salve o rascunho para conferir esta página.</p>}
         </div>
       </header>
       <div className="adm-tabs adm-page-picker" role="group" aria-label="Escolha uma página">

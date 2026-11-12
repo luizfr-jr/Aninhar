@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -8,8 +8,10 @@ import {
   ImageOff,
   ArrowUp,
   Link,
+  Search,
+  X,
 } from "lucide-react";
-import { type Topic, type TopicSection } from "../data/topics";
+import { normalizeSearch, type Topic, type TopicSection } from "../data/topics";
 import { useContent } from "../data/ContentContext";
 import { safeLink, topicHref, youtubeEmbed } from "../lib/navigation";
 
@@ -104,6 +106,15 @@ export default function TopicReader({
   const [copyFeedbackSection, setCopyFeedbackSection] = useState("");
   const [copiedSection, setCopiedSection] = useState("");
   const [textSize, setTextSize] = useState<TextSize>(readTextSize);
+  const [indexQuery, setIndexQuery] = useState("");
+  const indexSearchRef = useRef<HTMLInputElement>(null);
+  const indexTerms = normalizeSearch(indexQuery).split(/\s+/).filter(Boolean);
+  const visibleIndexSections = topic.sections
+    .map((section, index) => ({ section, index }))
+    .filter(({ section }) => {
+      const content = normalizeSearch(`${section.title} ${section.text}`);
+      return indexTerms.every((term) => content.includes(term));
+    });
   function changeTextSize(size: TextSize) {
     setTextSize(size);
     try {
@@ -230,8 +241,47 @@ export default function TopicReader({
             Neste tema{" "}
             <small>{topic.sections.length} tópicos para consultar</small>
           </summary>
-          <div>
-            {topic.sections.map((section, index) => (
+          <div className="topic-index-content">
+            {topic.sections.length > 5 && (
+              <form
+                className="topic-index-search"
+                role="search"
+                aria-label="Busca no índice deste tema"
+                onSubmit={(event) => event.preventDefault()}
+              >
+                <label htmlFor="topic-index-query">Encontrar neste tema</label>
+                <div className="topic-index-search-input">
+                  <Search size={18} aria-hidden="true" />
+                  <input
+                    ref={indexSearchRef}
+                    id="topic-index-query"
+                    type="search"
+                    value={indexQuery}
+                    placeholder="Digite uma palavra ou assunto"
+                    aria-describedby="topic-index-search-help"
+                    aria-controls="topic-index-links"
+                    onChange={(event) => setIndexQuery(event.target.value)}
+                  />
+                  {indexQuery && (
+                    <button
+                      type="button"
+                      aria-label="Limpar busca neste tema"
+                      onClick={() => { setIndexQuery(""); indexSearchRef.current?.focus(); }}
+                    >
+                      <X size={18} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+                <p id="topic-index-search-help">Busca nos títulos e no texto das orientações.</p>
+              </form>
+            )}
+            {indexTerms.length > 0 && (
+              <p className="topic-index-count" aria-live="polite" aria-atomic="true">
+                {visibleIndexSections.length} de {topic.sections.length} tópicos encontrados
+              </p>
+            )}
+            <div className="section-index-links" id="topic-index-links">
+            {visibleIndexSections.map(({ section, index }) => (
               <a
                 key={section.id}
                 onClick={() => {
@@ -250,6 +300,19 @@ export default function TopicReader({
                 <ArrowRight size={14} aria-hidden="true" />
               </a>
             ))}
+            </div>
+            {!visibleIndexSections.length && (
+              <div className="topic-index-empty">
+                <p>Nenhum tópico corresponde a esta busca. Tente outra palavra ou volte ao índice completo.</p>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  onClick={() => { setIndexQuery(""); indexSearchRef.current?.focus(); }}
+                >
+                  Ver todos os tópicos
+                </button>
+              </div>
+            )}
           </div>
         </details>
       </nav>

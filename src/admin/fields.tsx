@@ -19,6 +19,7 @@ type ControlProps = {
   "aria-describedby"?: string;
   "aria-invalid"?: boolean;
   onBlur?: (event: FocusEvent<Control>) => void;
+  onFocus?: (event: FocusEvent<Control>) => void;
   onChange?: (event: ChangeEvent<Control>) => void;
 };
 
@@ -43,6 +44,7 @@ export function Field({
   const controlId = control?.props.id ?? generatedId;
   const helpId = `${generatedId}-help`;
   const errorId = `${generatedId}-error`;
+  const visibleError = touched ? error : undefined;
   const validateRef = useRef(validate);
   validateRef.current = validate;
 
@@ -84,9 +86,14 @@ export function Field({
         ? cloneElement(control, {
             id: controlId,
             required: required || control.props.required,
-            "aria-describedby": [control.props["aria-describedby"], help && helpId, error && errorId]
+            "aria-describedby": [control.props["aria-describedby"], help && helpId, visibleError && errorId]
               .filter(Boolean).join(" ") || undefined,
-            "aria-invalid": error ? true : undefined,
+            "aria-invalid": visibleError ? true : undefined,
+            onFocus: (event: FocusEvent<Control>) => {
+              control.props.onFocus?.(event);
+              // Reserve the message space before a later click moves focus.
+              setError(checkField(event.currentTarget));
+            },
             onBlur: (event: FocusEvent<Control>) => {
               control.props.onBlur?.(event);
               setTouched(true);
@@ -94,12 +101,12 @@ export function Field({
             },
             onChange: (event: ChangeEvent<Control>) => {
               control.props.onChange?.(event);
-              if (touched) setError(checkField(event.currentTarget));
+              setError(checkField(event.currentTarget));
             },
           })
         : children}
       {help && <small id={helpId} className="adm-help">{help}</small>}
-      {error && <small id={errorId} className="adm-field-error">{error}</small>}
+      {error && <small id={errorId} className={`adm-field-error${touched ? "" : " is-reserved"}`} aria-hidden={!touched}>{error}</small>}
     </div>
   );
 }

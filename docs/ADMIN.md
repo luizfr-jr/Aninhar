@@ -13,9 +13,13 @@ Em produção, a origem deve usar HTTPS. Senha curta, segredo insuficiente ou or
 
 Em **Temas e conteúdos**, abra um tema ou escolha **Novo tema**. O nome aparece no menu; a descrição orienta a família. Adicione tópicos e preencha título e texto. Use **Subir/Descer** para organizar a leitura. Identificadores são gerados automaticamente e preservados ao editar títulos.
 
+A busca procura nos nomes dos temas, títulos e textos dos tópicos, ignorando diferenças de acentuação. Os resultados oferecem links para abrir diretamente a seção correspondente. Dentro de um tema, **Buscar tópicos deste tema** filtra a lista sem apagar ou alterar o restante do conteúdo. O tópico em edição permanece visível se o texto deixar de corresponder à busca. Ao corrigir um erro de salvamento, o painel revela a seção mesmo que esteja filtrada.
+
 As seções de imagem, vídeo e referências são opcionais. Imagens precisam de uma descrição acessível. Para vídeos, use o endereço de um vídeo aprovado do YouTube. Referências devem ter nome e URL HTTPS.
 
 **Salvar rascunho** grava a versão no servidor, mas não modifica a versão pública. **Ver prévia** abre o site com o documento salvo e uma faixa indicando a prévia. Quando terminar a revisão, use **Publicar** e confira o resumo antes de confirmar. A publicação inclui o documento inteiro: temas e páginas institucionais.
+
+No computador, **Ctrl+S** (Windows/Linux) ou **⌘S** (macOS) salva o rascunho durante a edição; não publica. Em **Páginas do site**, **Ver prévia da página** abre diretamente Sobre ou Contato, conforme a página selecionada. Salve as alterações para habilitar a prévia.
 
 A exclusão de um tema ou tópico afeta primeiro o rascunho. A alteração alcança o site somente após publicar. **Descartar alterações** retorna ao último rascunho salvo, mediante confirmação.
 
@@ -59,3 +63,9 @@ Por padrão, Node ignora `X-Forwarded-For` e limita as tentativas de login pelo 
 O servidor recusa `true`, nomes genéricos, contagens de saltos e redes `/0`. Deixe a variável vazia quando não houver um proxy confiável. Restrinja o acesso direto à porta Node e faça o proxy **sobrescrever** `X-Forwarded-For` com o IP observado da conexão (como no `nginx.conf`), em vez de preservar um valor enviado pelo cliente. Não marque redes que também contenham clientes não confiáveis. Depois da configuração, confira os testes de limite de login; o Compose repassa a variável ao container.
 
 Não publique a branch automaticamente sem conferir variáveis, volume persistente e revisão editorial. O workflow existente cria a imagem GHCR ao receber alterações em `main`; a criação do PR não altera o serviço em execução.
+
+### Acesso à infraestrutura institucional
+
+O painel Portainer institucional responde em `https://app.ufn.edu.br`, e o gerenciador de proxy em `https://proxy.app.ufn.edu.br`. A atualização deve identificar a instalação do **Aninhar**, preservar a configuração e o volume existentes e usar a imagem do commit aprovado. Publicar a imagem no GHCR não executa essa atualização por si só.
+
+As credenciais institucionais são fornecidas de forma privada pela TI. Não versione o arquivo `Docker.eml`, senhas, tokens do Portainer ou configurações exportadas que contenham segredos.
