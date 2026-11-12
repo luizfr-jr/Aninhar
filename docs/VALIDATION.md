@@ -14,18 +14,20 @@ A revisão de design centrado nas pessoas preserva a família de fontes original
 | Conteúdo | [Lista de temas](previews/admin-topics.png) · [Editor móvel](previews/admin-editor-mobile.png) |
 | Páginas institucionais | [Editor](previews/admin-pages.png) |
 | Imagens | [Biblioteca](previews/admin-media.png) |
+| Busca por conteúdo | [Público](previews/public-search-refined.png) · [Admin](previews/admin-search-refined.png) |
+| Índice e prévia contextual | [Filtro do índice](previews/public-index-filter.png) · [Prévia de Contato](previews/admin-page-preview.png) |
 
 ## Fluxos disponíveis
 
-- Público: início com acesso direto aos temas, busca com consulta preservada na URL, links diretos, índice recolhível no celular, preferência de tamanho do texto e confirmação de cópia junto ao tópico.
-- Admin: painel orientado a tarefas, criação/edição/remoção/reordenação de temas e tópicos, recursos opcionais recolhíveis, seleção de imagem diretamente para o tópico, páginas institucionais e e-mail de contato.
+- Público: início com acesso direto aos temas, busca com consulta preservada na URL e correspondências destacadas, links diretos, índice filtrável por título/texto sem ocultar os artigos, preferência de tamanho do texto e confirmação de cópia junto ao tópico.
+- Admin: busca nos textos com abertura da seção correspondente, filtro nos tópicos do editor, criação/edição/remoção/reordenação com foco preservado, recursos opcionais recolhíveis, seleção de imagem diretamente para o tópico, prévia de Sobre/Contato e atalho de salvamento Ctrl+S/⌘S.
 - Recuperação: ajuda e erros associados aos campos; salvamento leva ao campo a corrigir, inclusive em outra página; retorno da biblioteca preserva a seção em edição.
 - Editorial: salvar rascunho, abrir prévia autenticada, confirmar publicação, recuperar sessão e tratar conflito de versão.
 - Armazenamento: SQLite e imagens no servidor, com volume persistente no Docker.
 
 ## Verificação técnica
 
-Build de produção e ESLint passaram. Foram aprovados **11 testes da API e 83 testes de navegador**; 5 casos de navegador foram ignorados por aplicabilidade entre os projetos desktop e celular. A suíte cobre Chromium desktop e emulação de celular, incluindo os novos fluxos de preferência de leitura, falha de cópia, campos incompletos, validação entre páginas e retorno da biblioteca. Também cobre autenticação, origem de requisição, limite de tentativas, sessão, persistência após reabrir banco, gravação/publicação, conflito de versão, limites de arquivos, upload real, prévia, estado vazio, navegação, busca, tipografia e acessibilidade com axe.
+Build de produção e ESLint passaram, assim como os **11 testes da API**. A suíte de navegador contém 100 cenários em Chromium desktop e emulação de celular, dos quais 5 não se aplicam ao projeto correspondente. Cobre os novos fluxos de busca textual, índice filtrado, prévia institucional, atalho de salvamento, foco após remoção e validação de campos escondidos pelo filtro. Também verifica autenticação, sessão, persistência, gravação/publicação, conflito de versão, upload real, estado vazio, navegação, preferência de leitura, tipografia e acessibilidade com axe.
 
 As larguras verificadas incluem 320, 375, 390, 768 e 1280 px no público e no admin. Emulação não substitui validação em aparelhos reais e Safari/iOS.
 

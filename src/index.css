@@ -770,7 +770,7 @@ h3 {
   color: #604774;
   margin-bottom: 16px;
 }
-.section-index > div {
+.section-index-links {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px 24px;
@@ -797,6 +797,73 @@ h3 {
 .section-index a[aria-current] {
   color: #633782;
   background: #f5f0f9;
+}
+.topic-index-search {
+  margin: 8px 0 20px;
+}
+.topic-index-search > label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 650;
+}
+.topic-index-search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding-left: 12px;
+  border: 1px solid #cfc4dc;
+  border-radius: 10px;
+  color: var(--muted);
+  background: var(--surface);
+}
+.topic-index-search-input:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--soft);
+}
+.topic-index-search-input input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 8px 8px 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--text);
+}
+.topic-index-search-input input:focus-visible {
+  outline: none;
+}
+.topic-index-search-input input::-webkit-search-cancel-button {
+  display: none;
+}
+.topic-index-search-input button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+.topic-index-search > p,
+.topic-index-count,
+.topic-index-empty > p {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.topic-index-count {
+  margin-bottom: 12px;
+}
+.topic-index-empty .secondary-button {
+  margin-top: 12px;
 }
 .articles {
   display: flex;
@@ -975,6 +1042,24 @@ h3 {
   color: var(--muted);
   font-size: 14px;
   font-weight: 600;
+}
+.search-result-context {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+.search-result-kind {
+  color: var(--muted);
+  font-size: 12px;
+}
+.search-result mark {
+  padding: 0 1px;
+  border-radius: 2px;
+  background: #f6e8a7;
+  color: inherit;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 .search-result h2 {
   display: flex;
@@ -1277,7 +1362,7 @@ h3 {
   .section-index {
     padding: 16px 20px;
   }
-  .section-index > div {
+  .section-index-links {
     grid-template-columns: 1fr;
   }
   .section-index > summary small {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowLeft,
@@ -7,13 +7,19 @@ import {
   Image,
   Link,
   Plus,
+  Search,
   Trash2,
   Video,
+  X,
 } from "lucide-react";
 import type { TopicRecord, TopicSection } from "../types/content";
 import { validExternalUrl, validImageUrl, validVideoUrl } from "./validation";
 import { Field } from "./fields";
 import { moveItem, newId } from "./utils";
+
+function normalized(value: string) {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+}
 
 export default function TopicEditor({
   topic,
@@ -30,6 +36,21 @@ export default function TopicEditor({
   onMedia: (sectionId: string) => void;
   initialSectionId?: string;
 }) {
+  const [search, setSearch] = useState("");
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+  const searchId = useId();
+  const searchRef = useRef<HTMLInputElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+  const searchWords = normalized(search).trim().split(/\s+/).filter(Boolean);
+  const matchesSearch = (section: TopicSection) => {
+    const text = normalized(`${section.title} ${section.text}`);
+    return searchWords.every((word) => text.includes(word));
+  };
+  const matchingSections = topic.sections.filter((section) => {
+    return matchesSearch(section) || section.id === editingSectionId;
+  });
+  const retainedEditing = matchingSections.some((section) => section.id === editingSectionId && !matchesSearch(section));
+  const matchingIds = new Set(matchingSections.map((section) => section.id));
   const [expanded, setExpanded] = useState(
     () =>
       new Set(
@@ -40,6 +61,8 @@ export default function TopicEditor({
   );
   useEffect(() => {
     if (!initialSectionId) return;
+    setSearch("");
+    setExpanded((current) => new Set([...current, initialSectionId]));
     const frame = requestAnimationFrame(() => {
       const section = document.getElementById(`edit-${initialSectionId}`);
       section?.querySelector("summary")?.focus({ preventScroll: true });
@@ -47,6 +70,16 @@ export default function TopicEditor({
     });
     return () => cancelAnimationFrame(frame);
   }, [initialSectionId]);
+  useEffect(() => {
+    function revealSection(event: Event) {
+      const id = (event as CustomEvent<{ sectionId?: string }>).detail?.sectionId;
+      if (!id || !topic.sections.some((section) => section.id === id)) return;
+      setSearch("");
+      setExpanded((current) => new Set([...current, id]));
+    }
+    window.addEventListener("aninhar:reveal-section", revealSection);
+    return () => window.removeEventListener("aninhar:reveal-section", revealSection);
+  }, [topic.sections]);
   function updateSection(index: number, patch: Partial<TopicSection>) {
     onChange({
       ...topic,
@@ -57,12 +90,60 @@ export default function TopicEditor({
   }
   function addSection() {
     const section = { id: newId("secao"), title: "", text: "", links: [] };
+    setSearch("");
     setExpanded((current) => new Set([...current, section.id]));
     onChange({ ...topic, sections: [...topic.sections, section] });
     requestAnimationFrame(() => {
       const element = document.getElementById(`edit-${section.id}`);
       element?.scrollIntoView({ block: "start" });
       element?.querySelector<HTMLInputElement>("input")?.focus({ preventScroll: true });
+    });
+  }
+  function removeSection(index: number) {
+    const section = topic.sections[index];
+    if (!window.confirm(`Remover o tópico “${section.title || "sem título"}” deste rascunho?`)) return;
+    const remaining = topic.sections.filter((_, position) => position !== index);
+    const visibleRemaining = remaining.filter((item) => matchingIds.has(item.id));
+    const visibleIndex = matchingSections.findIndex((item) => item.id === section.id);
+    const next = visibleRemaining[Math.min(visibleIndex, visibleRemaining.length - 1)]
+      ?? remaining[Math.min(index, remaining.length - 1)];
+    if (!visibleRemaining.length) setSearch("");
+    setExpanded((current) => {
+      const result = new Set(current);
+      result.delete(section.id);
+      return result;
+    });
+    onChange({ ...topic, sections: remaining });
+    requestAnimationFrame(() => {
+      const target = next
+        ? document.getElementById(`edit-${next.id}`)?.querySelector<HTMLElement>("summary")
+        : addButtonRef.current;
+      target?.focus({ preventScroll: true });
+      target?.scrollIntoView({ block: "center" });
+    });
+  }
+  function addReference(sectionIndex: number) {
+    const section = topic.sections[sectionIndex];
+    const linkIndex = section.links.length;
+    updateSection(sectionIndex, { links: [...section.links, { label: "", url: "" }] });
+    requestAnimationFrame(() => {
+      const field = document.getElementById(`edit-${section.id}-reference-${linkIndex}`)?.querySelector<HTMLInputElement>("input");
+      field?.focus({ preventScroll: true });
+      field?.scrollIntoView({ block: "center" });
+    });
+  }
+  function removeReference(sectionIndex: number, linkIndex: number) {
+    const section = topic.sections[sectionIndex];
+    const remaining = section.links.filter((_, index) => index !== linkIndex);
+    updateSection(sectionIndex, { links: remaining });
+    requestAnimationFrame(() => {
+      const group = document.getElementById(`edit-${section.id}-references`);
+      if (group instanceof HTMLDetailsElement) group.open = true;
+      const next = remaining.length
+        ? document.getElementById(`edit-${section.id}-reference-${Math.min(linkIndex, remaining.length - 1)}`)?.querySelector<HTMLInputElement>("input")
+        : document.getElementById(`edit-${section.id}-add-reference`);
+      next?.focus({ preventScroll: true });
+      next?.scrollIntoView({ block: "center" });
     });
   }
   const pendingSections = topic.sections.filter(
@@ -157,18 +238,59 @@ export default function TopicEditor({
             Abra um tópico por vez. Use Subir e Descer para mudar a ordem no site.
           </p>
         </div>
-        <button className="adm-btn adm-secondary" onClick={addSection}>
+        <button ref={addButtonRef} className="adm-btn adm-secondary" onClick={addSection}>
           <Plus size={17} aria-hidden="true" /> Adicionar tópico
         </button>
       </div>
+      {topic.sections.length > 0 && (
+        <div className="adm-section-search">
+          <label htmlFor={searchId}>Buscar tópicos deste tema</label>
+          <div className="adm-section-search-input">
+            <Search size={18} aria-hidden="true" />
+            <input
+              ref={searchRef}
+              id={searchId}
+              type="search"
+              value={search}
+              onChange={(event) => { setEditingSectionId(null); setSearch(event.target.value); }}
+              placeholder="Busque uma palavra do título ou texto"
+              aria-describedby={`${searchId}-help ${searchId}-count`}
+            />
+            {search && (
+              <button
+                type="button"
+                className="adm-btn adm-quiet"
+                aria-label="Limpar busca de tópicos"
+                onClick={() => { setSearch(""); searchRef.current?.focus(); }}
+              ><X size={18} aria-hidden="true" /></button>
+            )}
+          </div>
+          <p id={`${searchId}-help`} className="adm-help">A busca não altera nem remove conteúdos. A ordem continua sendo a do site.</p>
+          <p id={`${searchId}-count`} className="adm-result-count" role="status" aria-atomic="true">
+            {searchWords.length
+              ? `${matchingSections.length} de ${topic.sections.length} tópicos exibidos${retainedEditing ? ". O tópico em edição permanece visível até você alterar a busca." : ""}`
+              : `${topic.sections.length} tópicos neste tema`}
+          </p>
+        </div>
+      )}
       {topic.sections.length > 1 && (
         <div className="adm-editor-view-controls" aria-label="Visualização dos tópicos">
           <button
             className="adm-btn adm-quiet"
-            onClick={() => setExpanded(new Set(topic.sections.map((section) => section.id)))}
-          >Abrir todos</button>
-          <button className="adm-btn adm-quiet" onClick={() => setExpanded(new Set())}>
-            Recolher todos
+            disabled={!matchingSections.length}
+            onClick={() => setExpanded((current) => new Set([...current, ...matchingIds]))}
+          >{searchWords.length ? "Abrir resultados" : "Abrir todos"}</button>
+          <button className="adm-btn adm-quiet" disabled={!matchingSections.length} onClick={() => setExpanded((current) => new Set([...current].filter((id) => !matchingIds.has(id))))}>
+            {searchWords.length ? "Recolher resultados" : "Recolher todos"}
+          </button>
+        </div>
+      )}
+      {topic.sections.length > 0 && !matchingSections.length && (
+        <div className="adm-empty">
+          <h3>Nenhum tópico encontrado</h3>
+          <p>Tente uma palavra mais curta ou limpe a busca para ver todos os tópicos.</p>
+          <button className="adm-btn adm-secondary" onClick={() => { setSearch(""); searchRef.current?.focus(); }}>
+            Mostrar todos os tópicos
           </button>
         </div>
       )}
@@ -187,6 +309,10 @@ export default function TopicEditor({
             key={section.id}
             id={`edit-${section.id}`}
             className="adm-section"
+            hidden={!matchingIds.has(section.id)}
+            onFocusCapture={(event) => {
+              if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target instanceof HTMLSelectElement) setEditingSectionId(section.id);
+            }}
             open={expanded.has(section.id)}
             onToggle={(event) => {
               const isOpen = event.currentTarget.open;
@@ -247,19 +373,7 @@ export default function TopicEditor({
                   </button>
                   <button
                     className="adm-btn adm-danger"
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          `Remover o tópico “${section.title || "sem título"}” deste rascunho?`,
-                        )
-                      )
-                        onChange({
-                          ...topic,
-                          sections: topic.sections.filter(
-                            (_, i) => i !== index,
-                          ),
-                        });
-                    }}
+                    onClick={() => removeSection(index)}
                   >
                     <Trash2 size={16} aria-hidden="true" /> Remover tópico
                   </button>
@@ -412,14 +526,14 @@ export default function TopicEditor({
                 )}
                 </div>
               </details>
-              <details className="adm-option-group" open={section.links.length > 0}>
+              <details id={`edit-${section.id}-references`} className="adm-option-group" open={section.links.length > 0}>
                 <summary><Link size={19} aria-hidden="true" /><span>Referências e leitura complementar</span><small>Opcional</small></summary>
                 <div className="adm-option-body">
                 <p className="adm-help">
                   Inclua fontes verificadas e links HTTPS.
                 </p>
                 {section.links.map((link, linkIndex) => (
-                  <div className="adm-inline-fields" key={linkIndex}>
+                  <div className="adm-inline-fields" key={linkIndex} id={`edit-${section.id}-reference-${linkIndex}`}>
                     <Field
                       label={`Nome da referência ${linkIndex + 1}`}
                       required
@@ -461,25 +575,16 @@ export default function TopicEditor({
                     <button
                       className="adm-btn adm-quiet"
                       aria-label={`Remover referência ${linkIndex + 1}`}
-                      onClick={() =>
-                        updateSection(index, {
-                          links: section.links.filter(
-                            (_, i) => i !== linkIndex,
-                          ),
-                        })
-                      }
+                      onClick={() => removeReference(index, linkIndex)}
                     >
                       <Trash2 size={17} aria-hidden="true" />
                     </button>
                   </div>
                 ))}
                 <button
+                  id={`edit-${section.id}-add-reference`}
                   className="adm-btn adm-secondary"
-                  onClick={() =>
-                    updateSection(index, {
-                      links: [...section.links, { label: "", url: "" }],
-                    })
-                  }
+                  onClick={() => addReference(index)}
                 >
                   <Plus size={17} aria-hidden="true" /> Adicionar referência
                 </button>

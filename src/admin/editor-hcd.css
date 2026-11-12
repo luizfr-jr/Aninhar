@@ -30,6 +30,56 @@
   gap: 6px;
   margin: -12px 0 12px;
 }
+.adm-root .adm-section[hidden] {
+  display: none;
+}
+.adm-section-search {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0 24px;
+  min-width: 0;
+}
+.adm-section-search > label {
+  font-size: 15px;
+  font-weight: 650;
+}
+.adm-section-search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  min-width: 0;
+  border: 1px solid #cfc2d9;
+  background: var(--adm-surface);
+  border-radius: 9px;
+  color: var(--adm-purple);
+}
+.adm-section-search-input:focus-within {
+  border-color: #9674b0;
+  box-shadow: 0 0 0 3px #eee5f5;
+}
+.adm-section-search-input > input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--adm-text);
+  font-size: 16px;
+}
+.adm-section-search-input > input:focus-visible {
+  outline: 0;
+}
+.adm-section-search-input > input::-webkit-search-cancel-button {
+  display: none;
+}
+.adm-section-search-input > .adm-btn {
+  padding: 8px;
+  min-width: 44px;
+  flex-shrink: 0;
+}
 .adm-root .adm-option-group {
   min-width: 0;
   border: 1px solid var(--adm-border);

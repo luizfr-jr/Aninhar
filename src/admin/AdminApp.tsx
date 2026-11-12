@@ -23,6 +23,7 @@ import {
   X,
 } from "lucide-react";
 import type { ContentDocument, TopicRecord } from "../types/content";
+import { normalizeSearch } from "../data/topics";
 import { validExternalUrl, validImageUrl, validVideoUrl } from "./validation";
 import { AdminApiError, adminRequest, type DraftState, type MediaItem } from "./api";
 import { formatDate, moveItem, newId } from "./utils";
@@ -36,7 +37,7 @@ type Notice = {
   message: string;
   conflict?: boolean;
 };
-type View = { page: string; id?: string };
+type View = { page: string; id?: string; sectionId?: string };
 const navigation = [
   { page: "overview", name: "Visão geral", icon: LayoutDashboard },
   { page: "topics", name: "Temas e conteúdos", icon: BookOpen },
@@ -44,8 +45,12 @@ const navigation = [
   { page: "pages", name: "Páginas do site", icon: FileText },
 ];
 function getView(): View {
-  const [page, id] = window.location.hash.slice(1).split("/");
-  return { page: page || "overview", id };
+  const [page, id, sectionId] = window.location.hash.slice(1).split("/");
+  try {
+    return { page: page || "overview", id: id ? decodeURIComponent(id) : undefined, sectionId: sectionId ? decodeURIComponent(sectionId) : undefined };
+  } catch {
+    return { page: "not-found" };
+  }
 }
 type ValidationIssue = {
   message: string;
@@ -194,14 +199,12 @@ function TopicsList({
   onCreate: () => void;
 }) {
   const [search, setSearch] = useState("");
-  const normalize = (value: string) =>
-    value
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLocaleLowerCase("pt-BR");
-  const filtered = content.topics.filter((topic) =>
-    normalize(`${topic.name} ${topic.description}`).includes(normalize(search)),
-  );
+  const terms = normalizeSearch(search).split(/\s+/).filter(Boolean);
+  const matches = (value: string) => terms.every((term) => normalizeSearch(value).includes(term));
+  const filtered = content.topics.map((topic) => ({
+    topic,
+    sections: terms.length ? topic.sections.filter((section) => matches(`${topic.name} ${topic.title} ${section.title} ${section.text}`)) : [],
+  })).filter(({ topic, sections }) => matches(`${topic.name} ${topic.title} ${topic.description}`) || sections.length > 0);
   return (
     <>
       <header className="adm-page-header">
@@ -217,16 +220,17 @@ function TopicsList({
         </button>
       </header>
       <label className="adm-field adm-search">
-        <span>Buscar tema</span>
+        <span>Buscar temas e tópicos</span>
         <div className="adm-search-input">
           <Search size={18} aria-hidden="true" />
           <input
-            className="adm-input"
+            className="adm-input adm-filter-input"
             type="search"
-            placeholder="Digite um nome ou assunto"
+            placeholder="Ex.: pega, banho ou certidão"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
+          {search && <button className="adm-search-clear" type="button" aria-label="Limpar busca de temas" onClick={() => setSearch("")}><X size={18} aria-hidden="true" /></button>}
         </div>
       </label>
       <div className="adm-list-heading">
@@ -234,7 +238,7 @@ function TopicsList({
         <span>As setas mudam a ordem após a publicação.</span>
       </div>
       <div className="adm-list">
-        {filtered.map((topic) => {
+        {filtered.map(({ topic, sections }) => {
           const index = content.topics.indexOf(topic);
           return (
             <article className="adm-list-row" key={topic.id}>
@@ -257,6 +261,20 @@ function TopicsList({
                     {topic.sections.length} tópicos
                     {index === 0 ? " · Primeiro no menu" : ""}
                   </span>
+                  {sections.length > 0 && (
+                    <div className="adm-match-list">
+                      <p>{sections.length} {sections.length === 1 ? "tópico encontrado" : "tópicos encontrados"}</p>
+                      <ul>
+                        {sections.map((section) => (
+                          <li key={section.id}>
+                            <a href={`#topic/${encodeURIComponent(topic.id)}/${encodeURIComponent(section.id)}`} aria-label={`Editar tópico ${section.title} em ${topic.name}`}>
+                              <FileText size={16} aria-hidden="true" />{section.title}<ArrowRight size={15} aria-hidden="true" />
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="adm-row-actions">
@@ -340,6 +358,10 @@ function AdminWorkspace() {
   const mobileCloseRef = useRef<HTMLButtonElement>(null);
   const publishRef = useRef<HTMLDialogElement>(null);
   const mainRef = useRef<HTMLElement>(null);
+  const validationFocusFrame = useRef<number>();
+  const saveRef = useRef<() => Promise<void>>(async () => {});
+  const busyRef = useRef(busy);
+  busyRef.current = busy;
   const dirty = content !== null && JSON.stringify(content) !== snapshot;
   const editorRef = useRef({ content, state, snapshot, dirty });
   editorRef.current = { content, state, snapshot, dirty };
@@ -460,6 +482,16 @@ function AdminWorkspace() {
     return () => window.removeEventListener("beforeunload", guard);
   }, [dirty]);
   useEffect(() => {
+    if (!authenticated) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey || event.key.toLowerCase() !== "s") return;
+      event.preventDefault();
+      if (editorRef.current.dirty && !busyRef.current) void saveRef.current();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [authenticated]);
+  useEffect(() => {
     const dialog = mobileRef.current;
     if (!mobileOpen || !dialog) return;
     dialog.showModal();
@@ -572,6 +604,7 @@ function AdminWorkspace() {
       setBusy(false);
     }
   }
+  saveRef.current = save;
   function createTopic() {
     if (!content) return;
     const topic: TopicRecord = {
@@ -601,7 +634,7 @@ function AdminWorkspace() {
   function openMedia(sectionId: string) {
     if (!view.id) return;
     setMediaTarget({ topicId: view.id, sectionId });
-    setMediaReturn(window.location.hash || "#overview");
+    setMediaReturn(`#topic/${encodeURIComponent(view.id)}/${encodeURIComponent(sectionId)}`);
     window.location.hash = "media";
   }
   function useMedia(item: MediaItem) {
@@ -625,16 +658,29 @@ function AdminWorkspace() {
     window.location.hash = `${issue.view.page}${issue.view.id ? `/${encodeURIComponent(issue.view.id)}` : ""}`;
   }
   const focusValidation = useCallback((issue: ValidationIssue) => {
+    if (validationFocusFrame.current !== undefined) cancelAnimationFrame(validationFocusFrame.current);
+    if (issue.sectionId) window.dispatchEvent(new CustomEvent("aninhar:reveal-section", { detail: { sectionId: issue.sectionId } }));
     const scope = issue.sectionId ? document.getElementById(`edit-${issue.sectionId}`) : mainRef.current;
     scope?.querySelectorAll("details").forEach((detail) => { detail.open = true; });
     if (scope instanceof HTMLDetailsElement) scope.open = true;
     window.dispatchEvent(new Event("aninhar:validate"));
-    requestAnimationFrame(() => {
-      const field = scope?.querySelector<HTMLElement>('[aria-invalid="true"], input:invalid, textarea:invalid');
-      const target = field ?? scope?.querySelector<HTMLElement>("summary, input, textarea") ?? mainRef.current;
+    const focusWhenVisible = (attempt = 0) => {
+      const currentScope = issue.sectionId ? document.getElementById(`edit-${issue.sectionId}`) : mainRef.current;
+      const field = currentScope?.querySelector<HTMLElement>('[aria-invalid="true"], input:invalid, textarea:invalid');
+      // Clearing an editor filter and rendering field errors may commit separately.
+      if ((!field || !field.getClientRects().length) && attempt < 10) {
+        validationFocusFrame.current = requestAnimationFrame(() => focusWhenVisible(attempt + 1));
+        return;
+      }
+      const target = field?.getClientRects().length ? field : mainRef.current;
       target?.focus({ preventScroll: true });
       target?.scrollIntoView({ block: "center", behavior: "auto" });
-    });
+      validationFocusFrame.current = undefined;
+    };
+    validationFocusFrame.current = requestAnimationFrame(() => focusWhenVisible());
+  }, []);
+  useEffect(() => () => {
+    if (validationFocusFrame.current !== undefined) cancelAnimationFrame(validationFocusFrame.current);
   }, []);
   useEffect(() => {
     if (!validationIssue || view.page !== validationIssue.view.page || view.id !== validationIssue.view.id) return;
@@ -786,6 +832,8 @@ function AdminWorkspace() {
               className="adm-btn adm-secondary"
               onClick={() => void save()}
               disabled={!dirty || busy || !content}
+              aria-keyshortcuts="Control+s Meta+s"
+              title="Salvar rascunho (Ctrl+S ou ⌘S)"
             >
               <Save size={17} aria-hidden="true" /> Salvar rascunho
             </button>
@@ -987,7 +1035,7 @@ function AdminWorkspace() {
                     onDelete={() => removeTopic(topic)}
                     canPreview={!dirty}
                     onMedia={openMedia}
-                    initialSectionId={mediaTarget?.topicId === topic.id ? mediaTarget.sectionId : undefined}
+                    initialSectionId={view.sectionId ?? (mediaTarget?.topicId === topic.id ? mediaTarget.sectionId : undefined)}
                   />
                 ) : (
                   <section className="adm-empty">
@@ -1017,6 +1065,7 @@ function AdminWorkspace() {
                   pages={content.pages}
                   selectedPage={selectedPage}
                   onPageChange={setSelectedPage}
+                  canPreview={!dirty}
                   onChange={(pages) => edit({ ...content, pages })}
                 />
               )}

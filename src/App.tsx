@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -11,10 +11,55 @@ import {
 import Sidebar from "./components/Sidebar";
 import TopicReader from "./components/TopicReader";
 import Welcome from "./components/Welcome";
-import { searchTopics } from "./data/topics";
+import { normalizeSearch, searchTopics } from "./data/topics";
 import { ContentProvider } from "./data/ContentProvider";
 import { useContent } from "./data/ContentContext";
 import { readRoute, searchHref, topicHref } from "./lib/navigation";
+
+/** Highlight original text without HTML insertion or changing accented words. */
+function SearchMatch({ text, query }: { text: string; query: string }) {
+  const terms = [...new Set(normalizeSearch(query).split(/\s+/).filter(Boolean))];
+  if (!terms.length) return <>{text}</>;
+  let folded = "";
+  let offset = 0;
+  const positions: Array<{ start: number; end: number }> = [];
+  for (const character of text) {
+    const normalized = character.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+    if (!normalized && positions.length) {
+      // Include a separately encoded combining mark with its preceding letter.
+      positions[positions.length - 1].end = offset + character.length;
+    }
+    for (let index = 0; index < normalized.length; index++) {
+      positions.push({ start: offset, end: offset + character.length });
+    }
+    folded += normalized;
+    offset += character.length;
+  }
+  const matches: Array<{ start: number; end: number }> = [];
+  for (const term of terms) {
+    let index = folded.indexOf(term);
+    while (index !== -1) {
+      matches.push({ start: positions[index].start, end: positions[index + term.length - 1].end });
+      index = folded.indexOf(term, index + term.length);
+    }
+  }
+  matches.sort((a, b) => a.start - b.start || a.end - b.end);
+  const ranges: typeof matches = [];
+  for (const match of matches) {
+    const previous = ranges[ranges.length - 1];
+    if (previous && match.start <= previous.end) previous.end = Math.max(previous.end, match.end);
+    else ranges.push({ ...match });
+  }
+  const parts: ReactNode[] = [];
+  let cursor = 0;
+  for (const range of ranges) {
+    if (cursor < range.start) parts.push(text.slice(cursor, range.start));
+    parts.push(<mark key={range.start}>{text.slice(range.start, range.end)}</mark>);
+    cursor = range.end;
+  }
+  if (cursor < text.length) parts.push(text.slice(cursor));
+  return <>{parts}</>;
+}
 
 function About({ contact = false }: { contact?: boolean }) {
   const { pages, topics } = useContent();
@@ -253,6 +298,7 @@ function PublicApp() {
           <form
             className="search-box"
             role="search"
+            aria-label="Busca em todo o guia"
             onSubmit={(event) => {
               event.preventDefault();
               changeSearch(query);
@@ -356,12 +402,15 @@ function PublicApp() {
                       key={`${result.topic.id}/${result.section?.id ?? ""}`}
                       href={topicHref(result.topic.id, result.section?.id)}
                     >
-                      <span className="search-result-category">{result.topic.name}</span>
+                      <div className="search-result-context">
+                        <span className="search-result-kind">{result.section ? "Tópico" : "Visão geral do tema"}</span>
+                        <span className="search-result-category"><SearchMatch text={result.topic.name} query={query} /></span>
+                      </div>
                       <h2>
-                        {result.section?.title ?? result.topic.name}
+                        <span><SearchMatch text={result.section?.title ?? result.topic.name} query={query} /></span>
                         <ArrowRight size={18} aria-hidden="true" />
                       </h2>
-                      <p>{result.excerpt}</p>
+                      <p><SearchMatch text={result.excerpt} query={query} /></p>
                       <span className="text-link">Ler conteúdo completo</span>
                     </a>
                   ))}
