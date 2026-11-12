@@ -2,6 +2,8 @@
 
 A revisão de design centrado nas pessoas preserva a família de fontes original em todas as telas. Textos principais e campos usam 16 px; no leitor é possível escolher 18 ou 20 px. O menu por temas continua lateral, com **Primeiros Dias** como primeiro tema inicial. As decisões, critérios e validação participativa pendente estão em [Design centrado nas pessoas](DESIGN_CENTRADO_NAS_PESSOAS.md).
 
+A página inicial e o painel foram reorganizados para colocar temas e tarefas no primeiro campo de visão, com apresentação e status compactos. Veja a [comparação visual antes e depois](COMPARACAO_LAYOUT.md).
+
 ## Capturas
 
 | Página | Prévia |
@@ -27,7 +29,7 @@ A revisão de design centrado nas pessoas preserva a família de fontes original
 
 ## Verificação técnica
 
-Build de produção e ESLint passaram, assim como os **11 testes da API**. A suíte de navegador contém 100 cenários em Chromium desktop e emulação de celular, dos quais 5 não se aplicam ao projeto correspondente. Cobre os novos fluxos de busca textual, índice filtrado, prévia institucional, atalho de salvamento, foco após remoção e validação de campos escondidos pelo filtro. Também verifica autenticação, sessão, persistência, gravação/publicação, conflito de versão, upload real, estado vazio, navegação, preferência de leitura, tipografia e acessibilidade com axe.
+Build de produção e ESLint passaram, assim como os **11 testes da API**. A suíte de navegador contém 104 cenários em Chromium desktop e emulação de celular, dos quais 5 não se aplicam ao projeto correspondente. Cobre o acesso aos temas e tarefas na primeira tela do celular, busca textual, índice filtrado, prévia institucional, atalho de salvamento, foco após remoção e validação de campos escondidos pelo filtro. Também verifica autenticação, sessão, persistência, gravação/publicação, conflito de versão, upload real, estado vazio, navegação, preferência de leitura, tipografia e acessibilidade com axe.
 
 As larguras verificadas incluem 320, 375, 390, 768 e 1280 px no público e no admin. Emulação não substitui validação em aparelhos reais e Safari/iOS.
 

@@ -1,5 +1,13 @@
 import { test, expect } from "@playwright/test";
 
+test("the first guide topic is visible without scrolling on a phone", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#home");
+  const directory = page.getByRole("region", { name: "Todos os temas", exact: true });
+  await expect(directory.getByRole("link").first()).toBeInViewport({ ratio: 1 });
+  await expect(page.getByRole("searchbox", { name: "Buscar em todos os temas" })).toBeInViewport();
+});
+
 test("public pages share the original sans-serif typography and readable search field", async ({
   page,
 }) => {
@@ -38,7 +46,7 @@ test("home provides direct access to all eleven topics", async ({ page }) => {
   await expect(directory).toBeFocused();
   await expect(directory).toBeInViewport();
   await expect(directory.getByRole("link")).toHaveCount(11);
-  await expect(directory.getByRole("link").first()).toHaveText(
+  await expect(directory.getByRole("link").first()).toHaveAccessibleName(
     "Primeiros Dias",
   );
   await directory.getByRole("link", { name: "Vacinas", exact: true }).click();

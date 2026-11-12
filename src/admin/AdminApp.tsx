@@ -928,87 +928,98 @@ function AdminWorkspace() {
             <fieldset className="adm-editor-area" disabled={busy}>
               {view.page === "overview" && (
                 <>
-                  <header className="adm-page-header">
+                  <header className="adm-page-header adm-overview-heading">
                     <div>
-                      <p className="adm-eyebrow">PAINEL INICIAL</p>
+                      <p className="adm-eyebrow">ESPAÇO DA EQUIPE</p>
                       <h1>Seu conteúdo, organizado</h1>
-                      <p className="adm-description">
-                        Prepare as orientações com calma, confira a prévia e
-                        publique quando estiver tudo revisado.
-                      </p>
+                      <p className="adm-description">Escolha o que deseja atualizar hoje.</p>
                     </div>
+                    <a className="adm-overview-site-link" href="/" target="_blank" rel="noreferrer">
+                      Ver site público <ArrowRight size={16} aria-hidden="true" />
+                    </a>
                   </header>
-                  <div className="adm-overview-layout">
-                    <section className="adm-card adm-publication-card" aria-labelledby="publication-status-title">
-                      <div className="adm-card-header">
-                        <div>
-                          <p className="adm-eyebrow">SITUAÇÃO DO CONTEÚDO</p>
-                          <h2 id="publication-status-title">
-                            {dirty ? "Há alterações para salvar" : published ? "O site está atualizado" : "Há um rascunho para revisar"}
-                          </h2>
-                        </div>
-                        <span className={`adm-badge ${dirty ? "is-warning" : published ? "is-success" : ""}`}>
-                          {dirty ? "Não salvo" : published ? "Publicado" : "Rascunho"}
-                        </span>
+                  <section className="adm-start-tasks" aria-labelledby="admin-tasks-title">
+                    <h2 id="admin-tasks-title">O que você quer atualizar?</h2>
+                    <div className="adm-start-task-grid">
+                      <a className="adm-start-task is-primary" href="#topics" aria-label="Editar temas">
+                        <span className="adm-start-task-icon"><BookOpen size={24} aria-hidden="true" /></span>
+                        <span><strong>Editar temas</strong><small>Textos, vídeos e ordem do guia</small></span>
+                        <ArrowRight size={19} aria-hidden="true" />
+                      </a>
+                      <a className="adm-start-task" href="#media" aria-label="Adicionar imagens">
+                        <span className="adm-start-task-icon"><Image size={24} aria-hidden="true" /></span>
+                        <span><strong>Adicionar imagens</strong><small>Enviar e encontrar ilustrações</small></span>
+                        <ArrowRight size={19} aria-hidden="true" />
+                      </a>
+                      <a className="adm-start-task" href="#pages" aria-label="Atualizar Sobre e Contato">
+                        <span className="adm-start-task-icon"><FileText size={24} aria-hidden="true" /></span>
+                        <span><strong>Atualizar Sobre e Contato</strong><small>Apresentação e canais da equipe</small></span>
+                        <ArrowRight size={19} aria-hidden="true" />
+                      </a>
+                    </div>
+                  </section>
+                  <section className={`adm-publication-strip${dirty ? " is-unsaved" : ""}`} aria-labelledby="publication-status-title">
+                    <span className={`adm-badge ${dirty ? "is-warning" : published ? "is-success" : ""}`}>
+                      {dirty ? "Não salvo" : published ? "Publicado" : "Rascunho"}
+                    </span>
+                    <div className="adm-publication-copy">
+                      <h2 id="publication-status-title">
+                        {dirty ? "Há alterações para salvar" : published ? "O site está atualizado" : "Há um rascunho para revisar"}
+                      </h2>
+                      <p>{dirty ? "Salve suas edições para guardá-las e abrir a prévia." : published ? "O conteúdo salvo já está disponível para as famílias." : "Confira a prévia antes de publicar a versão salva."}</p>
+                    </div>
+                    <button
+                      className="adm-btn adm-secondary"
+                      disabled={dirty}
+                      aria-describedby={dirty ? "overview-preview-help" : undefined}
+                      onClick={() => window.open("/?preview=1", "_blank", "noopener,noreferrer")}
+                    ><Eye size={17} aria-hidden="true" /> Abrir prévia</button>
+                    {dirty && <p className="adm-help adm-publication-help" id="overview-preview-help">A prévia fica disponível depois de salvar o rascunho.</p>}
+                  </section>
+                  <section className="adm-overview-topics" aria-labelledby="overview-topics-title">
+                    <div className="adm-overview-section-heading">
+                      <div>
+                        <h2 id="overview-topics-title">Acesso direto aos temas</h2>
+                        <p>Abra um tema para continuar a edição.</p>
                       </div>
-                      <p>
-                        {dirty ? "Suas últimas edições estão apenas nesta janela. Salve para guardá-las e conferir a prévia." : published ? "O conteúdo salvo é o mesmo que as famílias veem no site." : "O rascunho está guardado. Confira a prévia antes de torná-lo público."}
-                      </p>
+                      <a className="adm-btn adm-quiet" href="#topics">Gerenciar todos <ArrowRight size={16} aria-hidden="true" /></a>
+                    </div>
+                    {content.topics.length ? (
+                      <div className="adm-overview-topic-grid">
+                        {content.topics.map((item, index) => (
+                          <a className="adm-overview-topic" href={`#topic/${encodeURIComponent(item.id)}`} key={item.id}>
+                            <span className="adm-overview-topic-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                            <span><strong>{item.name}</strong><small>{item.sections.length} {item.sections.length === 1 ? "tópico" : "tópicos"}</small></span>
+                            <ChevronRight size={17} aria-hidden="true" />
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="adm-overview-empty">
+                        <p>O guia ainda não tem temas. Comece criando o primeiro.</p>
+                        <button className="adm-btn adm-primary" onClick={createTopic}><Plus size={17} aria-hidden="true" /> Criar tema</button>
+                      </div>
+                    )}
+                  </section>
+                  <div className="adm-overview-summary" aria-label="Resumo do conteúdo">
+                    <span><strong>{topicCount}</strong> temas no menu</span>
+                    <span><strong>{sectionCount}</strong> tópicos de orientação</span>
+                    <span><strong>{mediaCount}</strong> tópicos com imagem ou vídeo</span>
+                  </div>
+                  <details className="adm-guide adm-publication-details">
+                    <summary><CircleHelp size={20} aria-hidden="true" /> Publicação e orientações <ChevronRight size={18} aria-hidden="true" /></summary>
+                    <div className="adm-publication-details-body">
+                      <div className="adm-status-dates">
+                        <p><strong>Último salvamento</strong><br />{formatDate(state?.updatedAt)}</p>
+                        <p><strong>Última publicação</strong><br />{formatDate(state?.publishedAt)}</p>
+                      </div>
                       <ol className="adm-workflow" aria-label="Etapas de atualização do conteúdo">
                         <li className={dirty ? "is-current" : "is-done"}><span aria-hidden="true">1</span> Editar e salvar</li>
                         <li className={!dirty && !published ? "is-current" : published && !dirty ? "is-done" : ""}><span aria-hidden="true">2</span> Conferir a prévia</li>
                         <li className={published && !dirty ? "is-done" : ""}><span aria-hidden="true">3</span> Publicar</li>
                       </ol>
-                      <div className="adm-status-dates">
-                        <p><strong>Último salvamento</strong><br />{formatDate(state?.updatedAt)}</p>
-                        <p><strong>Última publicação</strong><br />{formatDate(state?.publishedAt)}</p>
-                      </div>
-                      <div className="adm-actions">
-                        <button
-                          className="adm-btn adm-secondary"
-                          disabled={dirty}
-                          aria-describedby={dirty ? "overview-preview-help" : undefined}
-                          onClick={() => window.open("/?preview=1", "_blank", "noopener,noreferrer")}
-                        ><Eye size={17} aria-hidden="true" /> Abrir prévia</button>
-                        <a className="adm-btn adm-quiet" href="/" target="_blank" rel="noreferrer">
-                          Ver site público <ArrowRight size={17} aria-hidden="true" />
-                        </a>
-                      </div>
-                      {dirty && <p className="adm-help" id="overview-preview-help">A prévia fica disponível depois de salvar o rascunho.</p>}
-                    </section>
-                    <section className="adm-card adm-task-card" aria-labelledby="admin-tasks-title">
-                      <h2 id="admin-tasks-title">O que você quer atualizar?</h2>
-                      <p>Escolha uma tarefa para começar.</p>
-                      <a className="adm-task-link" href="#topics">
-                        <BookOpen size={22} aria-hidden="true" />
-                        <span><strong>Editar temas</strong><small>Textos, vídeos e ordem do menu</small></span>
-                        <ChevronRight size={18} aria-hidden="true" />
-                      </a>
-                      <a className="adm-task-link" href="#media">
-                        <Image size={22} aria-hidden="true" />
-                        <span><strong>Adicionar imagens</strong><small>Enviar e encontrar ilustrações</small></span>
-                        <ChevronRight size={18} aria-hidden="true" />
-                      </a>
-                      <a className="adm-task-link" href="#pages">
-                        <FileText size={22} aria-hidden="true" />
-                        <span><strong>Atualizar Sobre e Contato</strong><small>Apresentação e informações da equipe</small></span>
-                        <ChevronRight size={18} aria-hidden="true" />
-                      </a>
-                    </section>
-                  </div>
-                  <div className="adm-metrics" aria-label="Resumo do conteúdo">
-                    <section className="adm-metric"><BookOpen size={22} aria-hidden="true" /><strong>{topicCount}</strong><span>Temas no menu</span></section>
-                    <section className="adm-metric"><FileText size={22} aria-hidden="true" /><strong>{sectionCount}</strong><span>Tópicos de orientação</span></section>
-                    <section className="adm-metric"><Image size={22} aria-hidden="true" /><strong>{mediaCount}</strong><span>Tópicos com imagem ou vídeo</span></section>
-                  </div>
-                  <details className="adm-guide">
-                    <summary><CircleHelp size={20} aria-hidden="true" /> Como atualizar o site <ChevronRight size={18} aria-hidden="true" /></summary>
-                    <ol className="adm-steps">
-                      <li><strong>Edite e organize.</strong> Atualize os temas, os textos e as imagens.</li>
-                      <li><strong>Salve o rascunho.</strong> Guarde as alterações sem mudar o site público.</li>
-                      <li><strong>Revise a prévia.</strong> Confira a leitura e peça a revisão clínica necessária.</li>
-                      <li><strong>Publique.</strong> Disponibilize a versão revisada para as famílias.</li>
-                    </ol>
+                      <p>Salvar guarda o rascunho. Confira a leitura na prévia e peça a revisão clínica necessária antes de publicar para as famílias.</p>
+                    </div>
                   </details>
                 </>
               )}
