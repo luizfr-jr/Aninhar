@@ -311,7 +311,7 @@ function TopicsList({
   );
 }
 
-export default function AdminApp() {
+function AdminWorkspace() {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [configured, setConfigured] = useState(true);
   const [state, setState] = useState<DraftState | null>(null);
@@ -1010,4 +1010,31 @@ export default function AdminApp() {
       </dialog>
     </div>
   );
+}
+
+export default function AdminApp() {
+  if (import.meta.env.VITE_STATIC_PUBLIC_FALLBACK === "1") {
+    return (
+      <main className="adm-root adm-login">
+        <section className="adm-login-card">
+          <img
+            className="adm-login-logo"
+            src="/aninhar-logo.jpg"
+            alt="Aninhar"
+          />
+          <p className="adm-eyebrow">ÁREA DA EQUIPE</p>
+          <h1>Administração indisponível nesta hospedagem</h1>
+          <p className="adm-description">
+            Esta hospedagem mantém uma versão estática do site público. Para
+            editar e publicar conteúdos, use a instalação do Aninhar com o
+            servidor administrativo e armazenamento persistente configurados.
+          </p>
+          <a className="adm-btn adm-primary" href="/">
+            <Home size={18} aria-hidden="true" /> Voltar ao site público
+          </a>
+        </section>
+      </main>
+    );
+  }
+  return <AdminWorkspace />;
 }

@@ -121,6 +121,21 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         );
         const payload: unknown = await response.json().catch(() => null);
         if (!active) return;
+        // Explicit compatibility mode for a static host returning index.html for /api.
+        // A real API error, JSON response, or protected preview must never use seed data.
+        if (
+          !preview &&
+          import.meta.env.VITE_STATIC_PUBLIC_FALLBACK === "1" &&
+          response.ok &&
+          response.headers
+            .get("content-type")
+            ?.toLowerCase()
+            .includes("text/html") &&
+          payload === null
+        ) {
+          setState({ status: "ready", content: seed });
+          return;
+        }
         // The Vite proxy explicitly identifies a missing local API. Never hide a server error.
         if (
           !preview &&

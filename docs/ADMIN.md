@@ -31,6 +31,14 @@ Um erro de salvamento não confirma a operação e mantém a edição na tela. S
 
 Se a sessão expirar durante uma edição, o conteúdo não salvo permanece temporariamente na memória da aba para recuperação após entrar novamente. Fechar a aba ou recarregar o navegador pode perder esse conteúdo; salve regularmente. O navegador solicita confirmação quando há mudanças não salvas.
 
+## Compatibilidade com o Vercel estático
+
+O `vercel.json` compila o frontend com `VITE_STATIC_PUBLIC_FALLBACK=1` para preservar o site público na hospedagem estática existente. Nessa instalação, quando `/api/content` devolve o próprio HTML do site com status de sucesso, as páginas exibem o conteúdo inicial incluído em `content/seed.json` no momento do build. Essa versão é um retrato estático: alterações salvas ou publicadas em outro servidor não são sincronizadas automaticamente com ela.
+
+O modo é explícito e restrito: erros reais da API (incluindo HTTP 500) continuam mostrando a opção de tentar novamente. A prévia de rascunhos nunca recebe esse fallback e continua exigindo autenticação. A rota `/admin` informa que a administração não está disponível nessa hospedagem e oferece retorno ao site, sem apresentar um formulário de login sem servidor.
+
+Para ter edição, prévia e publicação funcionando, use a instalação Node/Docker com armazenamento persistente descrita abaixo. Nela, **não** defina `VITE_STATIC_PUBLIC_FALLBACK`; o conteúdo público vem de `/api/content`, e o painel autentica no servidor. Essa compatibilidade mantém o Vercel público disponível enquanto o acesso à infraestrutura UFN é concluído; não altera o destino previsto para a instalação completa.
+
 ## Hospedagem e dados
 
 O site agora é uma aplicação Node.js 24 com API Express e SQLite, não apenas arquivos estáticos. O Dockerfile compila o frontend e executa o servidor Node na porta 80. Compose monta `aninhar-data` em `/app/data` para preservar:
