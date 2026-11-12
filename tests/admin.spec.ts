@@ -20,6 +20,8 @@ async function noOverflow(page: Page) {
 test("admin screens are readable, accessible, responsive and support keyboard navigation", async ({
   page,
 }) => {
+  // This flow runs six complete axe audits as well as keyboard checks.
+  test.slow();
   await page.goto("/admin");
   await expect(
     page.getByRole("heading", { name: "Administração do Aninhar" }),
@@ -222,7 +224,7 @@ test("media library uploads real image files and offers their persistent URL", a
     });
   await expect(
     page.getByText(
-      "Imagem enviada. Copie o endereço e use-o no tópico desejado.",
+      "Imagem enviada. Ela já está disponível para selecionar no editor de tópicos.",
     ),
   ).toBeVisible();
   const card = page.locator(".adm-media-card").first();

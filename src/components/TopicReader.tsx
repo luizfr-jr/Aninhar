@@ -13,6 +13,21 @@ import { type Topic, type TopicSection } from "../data/topics";
 import { useContent } from "../data/ContentContext";
 import { safeLink, topicHref, youtubeEmbed } from "../lib/navigation";
 
+type TextSize = "standard" | "large" | "extra-large";
+const readingPreferenceKey = "aninhar:reading:v1";
+
+function readTextSize(): TextSize {
+  try {
+    const saved: unknown = JSON.parse(
+      localStorage.getItem(readingPreferenceKey) ?? "null",
+    );
+    if (saved === "large" || saved === "extra-large") return saved;
+  } catch {
+    // Reading remains available when browser storage is disabled.
+  }
+  return "standard";
+}
+
 function SectionMedia({ section }: { section: TopicSection }) {
   const [imageFailed, setImageFailed] = useState(false);
   const embed = section.video && youtubeEmbed(section.video.url);
@@ -86,6 +101,17 @@ export default function TopicReader({
   const { topics } = useContent();
   const [indexOpen, setIndexOpen] = useState(() => window.innerWidth >= 700);
   const [copyMessage, setCopyMessage] = useState("");
+  const [copyFeedbackSection, setCopyFeedbackSection] = useState("");
+  const [copiedSection, setCopiedSection] = useState("");
+  const [textSize, setTextSize] = useState<TextSize>(readTextSize);
+  function changeTextSize(size: TextSize) {
+    setTextSize(size);
+    try {
+      localStorage.setItem(readingPreferenceKey, JSON.stringify(size));
+    } catch {
+      // The chosen size still applies for this visit.
+    }
+  }
   function returnToIndex() {
     setIndexOpen(true);
     requestAnimationFrame(() => {
@@ -95,12 +121,16 @@ export default function TopicReader({
     });
   }
   async function copySectionLink(id: string) {
+    setCopyFeedbackSection(id);
+    setCopyMessage("");
     const url = new URL(window.location.href);
     url.hash = topicHref(topic.id, id);
     try {
       await navigator.clipboard.writeText(url.href);
+      setCopiedSection(id);
       setCopyMessage("Link copiado. Você já pode compartilhá-lo.");
     } catch {
+      setCopiedSection("");
       setCopyMessage(
         "Não foi possível copiar. Abra o tópico e copie o endereço do navegador.",
       );
@@ -119,6 +149,9 @@ export default function TopicReader({
         </a>
         <header className="page-heading">
           <h1>{topic.name}</h1>
+          {topic.title !== topic.name && (
+            <p className="topic-full-title">{topic.title}</p>
+          )}
           <p>{topic.description}</p>
         </header>
         <section className="info-card">
@@ -134,7 +167,7 @@ export default function TopicReader({
       </div>
     );
   return (
-    <div className="reading-page">
+    <div className="reading-page topic-reading-page" data-text-size={textSize}>
       <a className="back-link" href="#home">
         <ArrowLeft size={16} aria-hidden="true" /> Início
       </a>
@@ -145,6 +178,9 @@ export default function TopicReader({
         <div className="title-row">
           <div>
             <h1>{topic.name}</h1>
+            {topic.title !== topic.name && (
+              <p className="topic-full-title">{topic.title}</p>
+            )}
             <p>{topic.description}</p>
           </div>
           <span className="topic-symbol">
@@ -160,6 +196,29 @@ export default function TopicReader({
           </button>
         </div>
       </header>
+      <div className="reading-preferences">
+        <fieldset>
+          <legend>Tamanho do texto</legend>
+          <div className="text-size-options">
+            {([
+              ["standard", "Padrão"],
+              ["large", "Grande"],
+              ["extra-large", "Maior"],
+            ] as const).map(([size, label]) => (
+              <button
+                key={size}
+                type="button"
+                aria-label={`Texto ${label.toLocaleLowerCase("pt-BR")}`}
+                aria-pressed={textSize === size}
+                onClick={() => changeTextSize(size)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <p>Escolha um tamanho confortável para ler.</p>
+      </div>
       <nav aria-label="Neste tema">
         <details
           id="topic-index"
@@ -194,7 +253,7 @@ export default function TopicReader({
           </div>
         </details>
       </nav>
-      <p className="copy-status" role="status">
+      <p className="sr-only" role="status">
         {copyMessage}
       </p>
       <div className="articles">
@@ -221,9 +280,13 @@ export default function TopicReader({
                   onClick={() => copySectionLink(section.id)}
                   aria-label={`Copiar link para ${section.title}`}
                 >
-                  <Link size={15} aria-hidden="true" /> Copiar link
+                  <Link size={15} aria-hidden="true" />
+                  {copiedSection === section.id ? "Link copiado" : "Copiar link"}
                 </button>
               </div>
+              {copyFeedbackSection === section.id && copyMessage && (
+                <p className="copy-feedback">{copyMessage}</p>
+              )}
             </div>
           </article>
         ))}
@@ -235,7 +298,7 @@ export default function TopicReader({
           substitui a avaliação de um profissional de saúde.
         </p>
       </aside>
-      {next && (
+      {next && next.id !== topic.id && (
         <a className="next-topic" href={topicHref(next.id)}>
           <div>
             <span>CONTINUE EXPLORANDO</span>

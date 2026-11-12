@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowDown,
   ArrowLeft,
   ArrowUp,
   ExternalLink,
   Image,
+  Link,
   Plus,
   Trash2,
+  Video,
 } from "lucide-react";
 import type { TopicRecord, TopicSection } from "../types/content";
+import { validExternalUrl, validImageUrl, validVideoUrl } from "./validation";
 import { Field } from "./fields";
 import { moveItem, newId } from "./utils";
 
@@ -18,21 +21,32 @@ export default function TopicEditor({
   onDelete,
   canPreview,
   onMedia,
+  initialSectionId,
 }: {
   topic: TopicRecord;
   onChange: (topic: TopicRecord) => void;
   onDelete: () => void;
   canPreview: boolean;
-  onMedia: () => void;
+  onMedia: (sectionId: string) => void;
+  initialSectionId?: string;
 }) {
   const [expanded, setExpanded] = useState(
     () =>
       new Set(
         topic.sections
-          .filter((section) => !section.title)
+          .filter((section) => !section.title || section.id === initialSectionId)
           .map((section) => section.id),
       ),
   );
+  useEffect(() => {
+    if (!initialSectionId) return;
+    const frame = requestAnimationFrame(() => {
+      const section = document.getElementById(`edit-${initialSectionId}`);
+      section?.querySelector("summary")?.focus({ preventScroll: true });
+      section?.scrollIntoView({ block: "start" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [initialSectionId]);
   function updateSection(index: number, patch: Partial<TopicSection>) {
     onChange({
       ...topic,
@@ -45,12 +59,15 @@ export default function TopicEditor({
     const section = { id: newId("secao"), title: "", text: "", links: [] };
     setExpanded((current) => new Set([...current, section.id]));
     onChange({ ...topic, sections: [...topic.sections, section] });
-    requestAnimationFrame(() =>
-      document
-        .getElementById(`edit-${section.id}`)
-        ?.scrollIntoView({ block: "start" }),
-    );
+    requestAnimationFrame(() => {
+      const element = document.getElementById(`edit-${section.id}`);
+      element?.scrollIntoView({ block: "start" });
+      element?.querySelector<HTMLInputElement>("input")?.focus({ preventScroll: true });
+    });
   }
+  const pendingSections = topic.sections.filter(
+    (section) => !section.title.trim() || !section.text.trim(),
+  ).length;
   return (
     <>
       <a className="adm-back" href="#topics">
@@ -58,6 +75,7 @@ export default function TopicEditor({
       </a>
       <header className="adm-page-header">
         <div>
+          <p className="adm-eyebrow">EDITAR TEMA</p>
           <h1>{topic.name || "Novo tema"}</h1>
           <p className="adm-description">
             Edite a apresentação e organize os tópicos na ordem de leitura. As
@@ -118,6 +136,17 @@ export default function TopicEditor({
           />
         </Field>
       </section>
+      <div className="adm-editor-guide">
+        <div>
+          <strong>Escreva primeiro. Enriqueça depois.</strong>
+          <p>Comece pelo título e pelo texto. Imagem, vídeo e referências ficam nas opções de cada tópico.</p>
+        </div>
+        <span className={`adm-badge${pendingSections ? " is-warning" : ""}`}>
+          {pendingSections
+            ? `${pendingSections} ${pendingSections === 1 ? "tópico sem título ou texto" : "tópicos sem título ou texto"}`
+            : `${topic.sections.length} ${topic.sections.length === 1 ? "tópico" : "tópicos"}`}
+        </span>
+      </div>
       <div className="adm-card-header">
         <div>
           <h2>
@@ -125,14 +154,24 @@ export default function TopicEditor({
             <span className="adm-badge">{topic.sections.length}</span>
           </h2>
           <p className="adm-help">
-            Expanda um tópico para editar seu texto, imagem, vídeo e
-            referências.
+            Abra um tópico por vez. Use Subir e Descer para mudar a ordem no site.
           </p>
         </div>
         <button className="adm-btn adm-secondary" onClick={addSection}>
           <Plus size={17} aria-hidden="true" /> Adicionar tópico
         </button>
       </div>
+      {topic.sections.length > 1 && (
+        <div className="adm-editor-view-controls" aria-label="Visualização dos tópicos">
+          <button
+            className="adm-btn adm-quiet"
+            onClick={() => setExpanded(new Set(topic.sections.map((section) => section.id)))}
+          >Abrir todos</button>
+          <button className="adm-btn adm-quiet" onClick={() => setExpanded(new Set())}>
+            Recolher todos
+          </button>
+        </div>
+      )}
       {!topic.sections.length && (
         <div className="adm-empty">
           <h3>Este tema ainda não tem tópicos</h3>
@@ -167,9 +206,10 @@ export default function TopicEditor({
               <span>
                 {section.title || "Novo tópico — preencha o título"}
                 <small>
-                  {section.image ? "Imagem · " : ""}
-                  {section.video ? "Vídeo · " : ""}
-                  {section.text.length} caracteres
+                  {!section.title.trim() || !section.text.trim() ? "Falta título ou texto" : "Título e texto preenchidos"}
+                  {section.image ? " · Imagem" : ""}
+                  {section.video ? " · Vídeo" : ""}
+                  {section.links.length ? ` · ${section.links.length} ${section.links.length === 1 ? "referência" : "referências"}` : ""}
                 </small>
               </span>
             </summary>
@@ -252,20 +292,19 @@ export default function TopicEditor({
                   required
                 />
               </Field>
-              <fieldset className="adm-fieldset">
-                <legend>
-                  Imagem ilustrativa <span className="adm-help">opcional</span>
-                </legend>
+              <details className="adm-option-group" open={Boolean(section.image)}>
+                <summary><Image size={19} aria-hidden="true" /><span>Imagem ilustrativa</span><small>Opcional</small></summary>
+                <div className="adm-option-body">
                 <p className="adm-help">
-                  Envie uma imagem na biblioteca e copie o endereço para este
-                  campo.
+                  Escolha uma imagem na biblioteca para inserir neste tópico
+                  ou cole o endereço HTTPS de uma ilustração aprovada.
                 </p>
                 <div className="adm-field-grid">
-                  <Field label="Endereço da imagem">
+                  <Field label="Endereço da imagem" validate={(value) => validImageUrl(value) ? undefined : "Use uma imagem da biblioteca ou um endereço HTTPS válido."}>
                     <input
                       className="adm-input"
                       value={section.image?.src ?? ""}
-                      placeholder="/media/imagem.png ou https://…"
+                      placeholder="Endereço da biblioteca ou https://…"
                       onChange={(e) =>
                         updateSection(index, {
                           image: e.target.value
@@ -283,7 +322,7 @@ export default function TopicEditor({
                   </Field>
                   <div className="adm-field adm-field-action">
                     <span>Arquivos do projeto</span>
-                    <button className="adm-btn adm-secondary" onClick={onMedia}>
+                    <button className="adm-btn adm-secondary" onClick={() => onMedia(section.id)}>
                       <Image size={17} aria-hidden="true" /> Abrir biblioteca
                     </button>
                   </div>
@@ -330,14 +369,15 @@ export default function TopicEditor({
                     </button>
                   </>
                 )}
-              </fieldset>
-              <fieldset className="adm-fieldset">
-                <legend>
-                  Vídeo do YouTube <span className="adm-help">opcional</span>
-                </legend>
+                </div>
+              </details>
+              <details className="adm-option-group" open={Boolean(section.video)}>
+                <summary><Video size={19} aria-hidden="true" /><span>Vídeo do YouTube</span><small>Opcional</small></summary>
+                <div className="adm-option-body">
                 <Field
                   label="Link do vídeo"
                   help="Cole o link de um vídeo aprovado. Ele será exibido dentro do tópico."
+                  validate={(value) => validVideoUrl(value) ? undefined : "Use um link válido de vídeo do YouTube."}
                 >
                   <input
                     className="adm-input"
@@ -370,9 +410,11 @@ export default function TopicEditor({
                     />
                   </Field>
                 )}
-              </fieldset>
-              <fieldset className="adm-fieldset">
-                <legend>Referências e leitura complementar</legend>
+                </div>
+              </details>
+              <details className="adm-option-group" open={section.links.length > 0}>
+                <summary><Link size={19} aria-hidden="true" /><span>Referências e leitura complementar</span><small>Opcional</small></summary>
+                <div className="adm-option-body">
                 <p className="adm-help">
                   Inclua fontes verificadas e links HTTPS.
                 </p>
@@ -399,6 +441,7 @@ export default function TopicEditor({
                     <Field
                       label={`Endereço da referência ${linkIndex + 1}`}
                       required
+                      validate={(value) => validExternalUrl(value) ? undefined : "Use um endereço completo iniciado por https://."}
                     >
                       <input
                         className="adm-input"
@@ -440,7 +483,8 @@ export default function TopicEditor({
                 >
                   <Plus size={17} aria-hidden="true" /> Adicionar referência
                 </button>
-              </fieldset>
+                </div>
+              </details>
             </div>
           </details>
         ))}

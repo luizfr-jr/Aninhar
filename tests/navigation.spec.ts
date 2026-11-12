@@ -123,7 +123,7 @@ test("empty and unmatched searches offer useful content and can be cleared", asy
 }) => {
   await page.goto("/#search");
   await expect(
-    page.getByRole("heading", { name: "Toda dúvida merece acolhimento." }),
+    page.getByRole("heading", { name: "O que você precisa saber hoje?" }),
   ).toBeVisible();
   const search = page.getByRole("searchbox", {
     name: "Buscar em todos os temas",

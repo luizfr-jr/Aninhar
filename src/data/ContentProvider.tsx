@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { BookOpen } from "lucide-react";
 import seed from "../../content/seed.json";
 import type {
@@ -103,6 +103,13 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     new URLSearchParams(window.location.search).get("preview") === "1";
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<LoadState>({ status: "loading" });
+  const feedbackHeadingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (state.status === "error") {
+      feedbackHeadingRef.current?.focus({ preventScroll: true });
+    }
+  }, [state.status]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -200,28 +207,38 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
   if (!value)
     return (
-      <main className="content-feedback">
-        <img src="/aninhar-logo.jpg" alt="Aninhar" />
+      <main className="content-feedback" aria-busy={state.status === "loading"}>
+        <a href="/" aria-label="Aninhar — início">
+          <img src="/aninhar-logo.jpg" alt="" />
+        </a>
         {state.status !== "error" ? (
-          <p role="status">Carregando o conteúdo do Aninhar…</p>
+          <>
+            <h1>Preparando o seu guia</h1>
+            <p role="status">Carregando o conteúdo do Aninhar…</p>
+          </>
         ) : (
           <>
-            <h1>
+            <h1 ref={feedbackHeadingRef} tabIndex={-1}>
               {state.unauthorized
                 ? "Entre para visualizar a prévia"
                 : "Conteúdo temporariamente indisponível"}
             </h1>
             <p role="alert">{state.message}</p>
             <div className="page-actions">
+              {state.unauthorized && (
+                <a className="primary-button" href="/admin">
+                  Ir para a administração
+                </a>
+              )}
               <button
-                className="primary-button"
+                className={state.unauthorized ? "secondary-button" : "primary-button"}
                 onClick={() => setAttempt((value) => value + 1)}
               >
                 Tentar novamente
               </button>
-              {state.unauthorized && (
-                <a className="secondary-button" href="/admin">
-                  Ir para a administração
+              {preview && (
+                <a className="secondary-button" href="/">
+                  Ver site público
                 </a>
               )}
             </div>

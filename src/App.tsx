@@ -235,7 +235,8 @@ function PublicApp() {
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen(true)}
           >
-            <Menu size={23} />
+            <Menu size={22} aria-hidden="true" />
+            <span>Temas</span>
           </button>
           <a
             className="mobile-wordmark"
@@ -258,10 +259,14 @@ function PublicApp() {
               searchRef.current?.focus();
             }}
           >
+            <label className="search-label" htmlFor="guide-search">
+              Buscar
+            </label>
             <input
+              id="guide-search"
               ref={searchRef}
               aria-label="Buscar em todos os temas"
-              placeholder="Buscar: banho, sono, vacinas…"
+              placeholder="Banho, sono, vacinas…"
               value={query}
               onChange={(event) => changeSearch(event.target.value)}
               type="search"
@@ -312,7 +317,10 @@ function PublicApp() {
               <header className="page-heading">
                 <span className="eyebrow">ENCONTRE O QUE PRECISA</span>
                 <h1>Buscar no Aninhar</h1>
-                <p>Pesquise em todos os temas, títulos e orientações.</p>
+                <p>
+                  Escreva o que você precisa na busca acima. Você pode usar uma
+                  palavra ou uma dúvida curta.
+                </p>
               </header>
               <p
                 role="status"
@@ -348,7 +356,7 @@ function PublicApp() {
                       key={`${result.topic.id}/${result.section?.id ?? ""}`}
                       href={topicHref(result.topic.id, result.section?.id)}
                     >
-                      <span className="eyebrow">{result.topic.name}</span>
+                      <span className="search-result-category">{result.topic.name}</span>
                       <h2>
                         {result.section?.title ?? result.topic.name}
                         <ArrowRight size={18} aria-hidden="true" />
@@ -364,12 +372,12 @@ function PublicApp() {
                   <h2>
                     {query.trim()
                       ? "Vamos tentar de outro jeito?"
-                      : "Toda dúvida merece acolhimento."}
+                      : "O que você precisa saber hoje?"}
                   </h2>
                   <p>
                     {query.trim()
                       ? "Tente palavras como “banho”, “sono” ou “amamentação”. Você também pode escolher um tema no menu."
-                      : "Busque uma palavra ou explore os temas do menu."}
+                      : "Escolha uma sugestão acima ou explore todos os temas do guia."}
                   </p>
                   {query.trim() && (
                     <button
@@ -382,6 +390,9 @@ function PublicApp() {
                       Limpar e buscar novamente
                     </button>
                   )}
+                  <a className="text-link" href="#home">
+                    Explorar os temas <ArrowRight size={16} aria-hidden="true" />
+                  </a>
                 </div>
               )}
             </div>

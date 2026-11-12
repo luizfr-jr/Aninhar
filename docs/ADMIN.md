@@ -21,13 +21,13 @@ A exclusão de um tema ou tópico afeta primeiro o rascunho. A alteração alcan
 
 ## Imagens e páginas institucionais
 
-Na **Biblioteca de imagens**, envie PNG, JPEG ou WebP até 8 MB. Copie o endereço e cole no campo de imagem de um tópico. A biblioteca também pode ser aberta a partir do editor; use **Voltar ao editor** para retomar o conteúdo. Arquivos são mantidos no armazenamento do servidor. Esta versão não exclui arquivos da biblioteca.
+Na **Biblioteca de imagens**, envie PNG, JPEG ou WebP até 8 MB e encontre arquivos pelo nome. Dentro de um tópico, abra **Imagem ilustrativa → Abrir biblioteca** e escolha **Usar imagem neste tópico**. O editor retorna à mesma seção com a imagem inserida; preencha sua descrição de acessibilidade. **Voltar ao editor** retorna sem trocar a imagem. Também é possível copiar um endereço e colá-lo no campo correspondente. Arquivos são mantidos no armazenamento do servidor. Esta versão não exclui arquivos da biblioteca.
 
 Em **Páginas do site**, edite os textos de Sobre e Contato. O e-mail é opcional; informe apenas um canal oficial. O site apresenta um link para o aplicativo de e-mail, sem simular um serviço de mensagens.
 
 ## Falhas e conflitos
 
-Um erro de salvamento não confirma a operação e mantém a edição na tela. Se outra pessoa salvar a mesma versão, o painel informa o conflito e oferece recarregar a versão atual com confirmação. Não sobrescreve silenciosamente a versão mais recente.
+Campos incompletos ou endereços inválidos recebem uma mensagem junto ao controle. Ao salvar, o painel abre o tema ou a página correspondente e leva ao primeiro campo que precisa de correção. A ação **Ir ao campo** permite retomar essa posição. Um erro de salvamento não confirma a operação e mantém a edição na tela. Se outra pessoa salvar a mesma versão, o painel informa o conflito e oferece recarregar a versão atual com confirmação. Não sobrescreve silenciosamente a versão mais recente.
 
 Se a sessão expirar durante uma edição, o conteúdo não salvo permanece temporariamente na memória da aba para recuperação após entrar novamente. Fechar a aba ou recarregar o navegador pode perder esse conteúdo; salve regularmente. O navegador solicita confirmação quando há mudanças não salvas.
 

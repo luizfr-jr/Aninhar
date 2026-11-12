@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import type { ContentDocument, PageRecord } from "../types/content";
 import { Field } from "./fields";
@@ -7,17 +7,48 @@ import { moveItem, newId } from "./utils";
 export default function PageEditor({
   pages,
   onChange,
+  selectedPage,
+  onPageChange,
 }: {
   pages: ContentDocument["pages"];
   onChange: (pages: ContentDocument["pages"]) => void;
+  selectedPage?: "about" | "contact";
+  onPageChange?: (page: "about" | "contact") => void;
 }) {
-  const [selected, setSelected] = useState<"about" | "contact">("about");
+  const [selected, setSelected] = useState<"about" | "contact">(selectedPage ?? "about");
+  const addButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (selectedPage) setSelected(selectedPage);
+  }, [selectedPage]);
   const page = pages[selected];
   const update = (next: PageRecord) => onChange({ ...pages, [selected]: next });
+  function addBlock() {
+    const id = newId("bloco");
+    update({ ...page, sections: [...page.sections, { id, title: "", text: "" }] });
+    requestAnimationFrame(() => {
+      const block = document.getElementById(`page-block-${id}`);
+      block?.scrollIntoView({ block: "start" });
+      block?.querySelector<HTMLInputElement>("input")?.focus({ preventScroll: true });
+    });
+  }
+  function removeBlock(index: number) {
+    const section = page.sections[index];
+    if (!window.confirm(`Remover o bloco “${section.title || index + 1}” do rascunho?`)) return;
+    const remaining = page.sections.filter((_, i) => index !== i);
+    update({ ...page, sections: remaining });
+    requestAnimationFrame(() => {
+      const next = remaining[Math.min(index, remaining.length - 1)];
+      const input = next
+        ? document.getElementById(`page-block-${next.id}`)?.querySelector<HTMLInputElement>("input")
+        : null;
+      (input ?? addButton.current)?.focus();
+    });
+  }
   return (
     <>
       <header className="adm-page-header">
         <div>
+          <p className="adm-eyebrow">INFORMAÇÕES DO PROJETO</p>
           <h1>Páginas do site</h1>
           <p className="adm-description">
             Mantenha as informações institucionais e os canais de contato
@@ -25,24 +56,27 @@ export default function PageEditor({
           </p>
         </div>
       </header>
-      <div className="adm-tabs" role="group" aria-label="Escolha uma página">
+      <div className="adm-tabs adm-page-picker" role="group" aria-label="Escolha uma página">
         <button
           className={`adm-btn ${selected === "about" ? "adm-primary" : "adm-secondary"}`}
           aria-pressed={selected === "about"}
-          onClick={() => setSelected("about")}
+          aria-label="Sobre o Aninhar"
+          onClick={() => { setSelected("about"); onPageChange?.("about"); }}
         >
-          Sobre o Aninhar
+          <span><strong>Sobre o Aninhar</strong><small>Apresente o projeto e sua proposta.</small></span>
         </button>
         <button
           className={`adm-btn ${selected === "contact" ? "adm-primary" : "adm-secondary"}`}
           aria-pressed={selected === "contact"}
-          onClick={() => setSelected("contact")}
+          aria-label="Contato"
+          onClick={() => { setSelected("contact"); onPageChange?.("contact"); }}
         >
-          Contato
+          <span><strong>Contato</strong><small>Oriente como falar com a equipe.</small></span>
         </button>
       </div>
       <section className="adm-card adm-stack">
         <h2>{selected === "about" ? "Sobre o Aninhar" : "Contato"}</h2>
+        <p className="adm-help">Edite a apresentação abaixo e organize os blocos na sequência de leitura. Campos com * são obrigatórios.</p>
         <Field label="Título da página" required>
           <input
             className="adm-input"
@@ -67,6 +101,7 @@ export default function PageEditor({
           <Field
             label="E-mail de contato"
             help="Opcional. Só informe um endereço oficial que realmente receba mensagens; ele aparecerá no site como um link para enviar e-mail."
+            validate={(value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? undefined : "Informe um e-mail de contato válido."}
           >
             <input
               className="adm-input"
@@ -79,27 +114,26 @@ export default function PageEditor({
         )}
       </section>
       <div className="adm-card-header">
-        <h2>Blocos de conteúdo</h2>
+        <div>
+          <h2>Blocos de conteúdo <span className="adm-badge">{page.sections.length}</span></h2>
+          <p className="adm-help">Cada bloco aparece como uma seção da página pública.</p>
+        </div>
         <button
+          ref={addButton}
           className="adm-btn adm-secondary"
-          onClick={() =>
-            update({
-              ...page,
-              sections: [
-                ...page.sections,
-                { id: newId("bloco"), title: "", text: "" },
-              ],
-            })
-          }
+          onClick={addBlock}
         >
           <Plus size={17} aria-hidden="true" /> Adicionar bloco
         </button>
       </div>
       <div className="adm-stack">
         {page.sections.map((section, index) => (
-          <section key={section.id} className="adm-card adm-stack">
+          <section key={section.id} id={`page-block-${section.id}`} className="adm-card adm-stack adm-page-block">
             <div className="adm-section-tools">
-              <h3>Bloco {index + 1}</h3>
+              <div>
+                <p className="adm-block-position">Bloco {index + 1} de {page.sections.length}</p>
+                <h3>{section.title || "Novo bloco"}</h3>
+              </div>
               <div className="adm-row-actions">
                 <button
                   className="adm-btn adm-quiet"
@@ -113,6 +147,7 @@ export default function PageEditor({
                   aria-label={`Mover bloco ${index + 1} para cima`}
                 >
                   <ArrowUp size={17} aria-hidden="true" />
+                  <span>Subir</span>
                 </button>
                 <button
                   className="adm-btn adm-quiet"
@@ -126,20 +161,11 @@ export default function PageEditor({
                   aria-label={`Mover bloco ${index + 1} para baixo`}
                 >
                   <ArrowDown size={17} aria-hidden="true" />
+                  <span>Descer</span>
                 </button>
                 <button
                   className="adm-btn adm-danger"
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        `Remover o bloco “${section.title || index + 1}” do rascunho?`,
-                      )
-                    )
-                      update({
-                        ...page,
-                        sections: page.sections.filter((_, i) => index !== i),
-                      });
-                  }}
+                  onClick={() => removeBlock(index)}
                 >
                   <Trash2 size={16} aria-hidden="true" /> Remover
                 </button>

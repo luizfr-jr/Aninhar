@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Copy, Image, Upload } from "lucide-react";
+import { ArrowLeft, Check, Copy, Image, Search, Upload } from "lucide-react";
 import { adminRequest, type MediaItem } from "./api";
 
 export default function MediaLibrary({
   onError,
   onReturn,
+  onSelect,
 }: {
   onError: (error: unknown) => void;
   onReturn?: () => void;
+  onSelect?: (item: MediaItem) => void;
 }) {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -16,6 +18,8 @@ export default function MediaLibrary({
   const [uploading, setUploading] = useState(false);
   const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
+  const [messageError, setMessageError] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     let mounted = true;
@@ -37,12 +41,17 @@ export default function MediaLibrary({
     };
   }, [onError, reloadCount]);
   async function upload(file: File) {
+    setMessageError(false);
     if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
       setMessage("Escolha uma imagem PNG, JPG ou WebP.");
+      setMessageError(true);
+      if (inputRef.current) inputRef.current.value = "";
       return;
     }
     if (file.size > 8 * 1024 * 1024) {
       setMessage("Esta imagem ultrapassa 8 MB. Escolha uma imagem menor.");
+      setMessageError(true);
+      if (inputRef.current) inputRef.current.value = "";
       return;
     }
     setUploading(true);
@@ -56,7 +65,9 @@ export default function MediaLibrary({
       });
       setItems((current) => [item, ...current]);
       setMessage(
-        "Imagem enviada. Copie o endereço e use-o no tópico desejado.",
+        onSelect
+          ? "Imagem enviada. Selecione Usar imagem neste tópico para inseri-la."
+          : "Imagem enviada. Ela já está disponível para selecionar no editor de tópicos.",
       );
     } catch (error) {
       onError(error);
@@ -66,20 +77,21 @@ export default function MediaLibrary({
     }
   }
   async function copy(item: MediaItem) {
+    setMessageError(false);
     try {
       await navigator.clipboard.writeText(item.url);
       setMessage(`Endereço de “${item.name}” copiado.`);
+      setCopiedId(item.id);
     } catch {
+      setCopiedId(null);
+      setMessageError(true);
       setMessage(
         "Não foi possível copiar automaticamente. Selecione o endereço da imagem e copie-o.",
       );
     }
   }
-  const filtered = items.filter((item) =>
-    item.name
-      .toLocaleLowerCase("pt-BR")
-      .includes(query.toLocaleLowerCase("pt-BR")),
-  );
+  const normalize = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+  const filtered = items.filter((item) => normalize(item.name).includes(normalize(query)));
   return (
     <>
       {onReturn && (
@@ -91,17 +103,18 @@ export default function MediaLibrary({
         <div>
           <h1>Biblioteca de imagens</h1>
           <p className="adm-description">
-            Envie ilustrações e use seus endereços nos tópicos. Os arquivos
-            ficam salvos no servidor.
+            {onSelect
+              ? "Escolha uma imagem para o tópico em edição ou envie uma nova. Depois, descreva o que ela ensina no editor."
+              : "Reúna as ilustrações do projeto. Para inserir uma imagem, abra a biblioteca pelo tópico em edição."}
           </p>
         </div>
       </header>
-      <section className="adm-upload">
+      <section className="adm-upload" aria-busy={uploading} aria-labelledby="media-upload-title">
         <Upload size={28} aria-hidden="true" />
         <div>
-          <h2>Adicionar uma imagem</h2>
-          <p>
-            PNG, JPG ou WebP, até 8 MB. Prefira arquivos legíveis no celular.
+          <h2 id="media-upload-title">Adicionar uma imagem</h2>
+          <p id="media-upload-help">
+            PNG, JPG ou WebP, até 8 MB. O envio começa ao selecionar o arquivo.
           </p>
           <input
             ref={inputRef}
@@ -110,6 +123,7 @@ export default function MediaLibrary({
             type="file"
             accept="image/png,image/jpeg,image/webp"
             disabled={uploading}
+            aria-describedby="media-upload-help"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) void upload(file);
@@ -117,19 +131,17 @@ export default function MediaLibrary({
           />
         </div>
       </section>
-      <p className="adm-inline-status" role="status">
-        {message}
+      <p className={`adm-inline-status${messageError ? " is-error" : ""}`} role={messageError ? "alert" : "status"} aria-atomic="true">
+        {uploading ? "Enviando imagem… aguarde a confirmação antes de sair desta página." : message}
       </p>
       <label className="adm-field adm-search">
         <span>Buscar imagens pelo nome</span>
-        <input
-          className="adm-input"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Digite o nome do arquivo"
-        />
+        <div className="adm-search-input">
+          <Search size={18} aria-hidden="true" />
+          <input className="adm-input" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Digite o nome do arquivo" />
+        </div>
       </label>
+      {!loading && !loadFailed && items.length > 0 && <p className="adm-result-count">{filtered.length} de {items.length} imagens{query ? " encontradas" : " na biblioteca"}</p>}
       {loading ? (
         <p role="status">Carregando imagens…</p>
       ) : loadFailed ? (
@@ -179,6 +191,11 @@ export default function MediaLibrary({
                   {Math.max(1, Math.round(item.size / 1024))} KB ·{" "}
                   {item.mimeType.replace("image/", "").toUpperCase()}
                 </p>
+                {onSelect && (
+                  <button className="adm-btn adm-primary" onClick={() => onSelect(item)}>
+                    <Check size={16} aria-hidden="true" /> Usar imagem neste tópico
+                  </button>
+                )}
                 <label className="adm-field">
                   <span>Endereço para usar no conteúdo</span>
                   <input
@@ -192,7 +209,8 @@ export default function MediaLibrary({
                   className="adm-btn adm-secondary"
                   onClick={() => void copy(item)}
                 >
-                  <Copy size={16} aria-hidden="true" /> Copiar endereço
+                  {copiedId === item.id ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
+                  {copiedId === item.id ? "Endereço copiado" : "Copiar endereço"}
                 </button>
               </div>
             </article>
