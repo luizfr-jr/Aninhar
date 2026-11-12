@@ -52,4 +52,10 @@ O acesso administrativo usa cookie HTTP-only, SameSite=Strict, expiração, vali
 
 A instalação estática anterior no Vercel não oferece o disco persistente necessário. Use o ambiente Node/Docker já previsto no projeto, com HTTPS no proxy. O arquivo `nginx.conf` exemplifica um proxy para a porta 8090 da configuração `docker/docker-compose.yml`; ajuste domínio e TLS na infraestrutura existente.
 
+### IP do cliente atrás de um proxy
+
+Por padrão, Node ignora `X-Forwarded-For` e limita as tentativas de login pelo IP da conexão direta. Se Nginx/Portainer encaminha todo o tráfego, configure `TRUST_PROXY` somente com os **IPs ou CIDRs reais e exclusivos desses proxies**, separados por vírgula. Isso permite limitar cada cliente pelo seu IP, sem agrupar todos os editores no mesmo limite do proxy. Exemplo: `127.0.0.1,::1` é correto **apenas** quando a conexão do proxy chega pelo loopback; em Docker, identifique o IP/rede efetivamente usado pelo proxy, não presuma que seja loopback.
+
+O servidor recusa `true`, nomes genéricos, contagens de saltos e redes `/0`. Deixe a variável vazia quando não houver um proxy confiável. Restrinja o acesso direto à porta Node e faça o proxy **sobrescrever** `X-Forwarded-For` com o IP observado da conexão (como no `nginx.conf`), em vez de preservar um valor enviado pelo cliente. Não marque redes que também contenham clientes não confiáveis. Depois da configuração, confira os testes de limite de login; o Compose repassa a variável ao container.
+
 Não publique a branch automaticamente sem conferir variáveis, volume persistente e revisão editorial. O workflow existente cria a imagem GHCR ao receber alterações em `main`; a criação do PR não altera o serviço em execução.

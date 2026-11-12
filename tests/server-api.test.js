@@ -390,3 +390,64 @@ test("upload enforces the size limit and mutations reject missing Origin", async
     await api.close();
   }
 });
+
+test("trusted proxy IPs keep different clients' login limits separate", async () => {
+  const api = await setup({ loginLimit: 2, trustedProxy: "127.0.0.1, ::1" });
+  const attempt = (ip, value = "wrong") =>
+    api.request("/api/auth/login", {
+      ...api.json("POST", { password: value }),
+      headers: { "Content-Type": "application/json", "X-Forwarded-For": ip },
+    });
+  try {
+    assert.equal((await attempt("203.0.113.10")).status, 401);
+    assert.equal((await attempt("203.0.113.10")).status, 401);
+    assert.equal((await attempt("203.0.113.10", password)).status, 429);
+    assert.equal((await attempt("203.0.113.20")).status, 401);
+    assert.equal((await attempt("203.0.113.20", password)).status, 200);
+  } finally {
+    await api.close();
+  }
+});
+
+test("untrusted forwarding headers cannot bypass the direct client's limit", async () => {
+  for (const trustedProxy of [undefined, "198.51.100.1/32"]) {
+    const api = await setup({ loginLimit: 2, trustedProxy });
+    const attempt = (ip) =>
+      api.request("/api/auth/login", {
+        ...api.json("POST", { password: "wrong" }),
+        headers: { "Content-Type": "application/json", "X-Forwarded-For": ip },
+      });
+    try {
+      assert.equal((await attempt("203.0.113.10")).status, 401);
+      assert.equal((await attempt("203.0.113.20")).status, 401);
+      assert.equal((await attempt("203.0.113.30")).status, 429);
+    } finally {
+      await api.close();
+    }
+  }
+});
+
+test("proxy configuration accepts explicit IPs/CIDRs and rejects blanket trust", async () => {
+  const { parseTrustedProxy } = await import("../server/trusted-proxy.js");
+  assert.deepEqual(parseTrustedProxy(), []);
+  assert.deepEqual(
+    parseTrustedProxy("127.0.0.1, 10.20.30.0/24, ::1, 2001:db8::/64"),
+    ["127.0.0.1", "10.20.30.0/24", "::1", "2001:db8::/64"],
+  );
+  for (const invalid of [
+    true,
+    1,
+    "true",
+    "1",
+    "loopback",
+    "localhost",
+    "0.0.0.0/0",
+    "::/0",
+    "127.0.0.1/33",
+    "::1/129",
+    "10.1.2.3/24/32",
+    "10.1.2.3/nope",
+  ]) {
+    assert.throws(() => parseTrustedProxy(invalid), /TRUST_PROXY/);
+  }
+});

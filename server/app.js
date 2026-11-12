@@ -11,6 +11,7 @@ import {
 import { mkdirSync, writeFileSync, unlinkSync, existsSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import { openDatabase, readDraft } from "./database.js";
+import { parseTrustedProxy } from "./trusted-proxy.js";
 import {
   validateContent,
   validateVersion,
@@ -78,11 +79,13 @@ export function createApp(options) {
   const passwordHash = configured
     ? scryptSync(password, passwordSalt, 64)
     : null;
+  const trustedProxies = parseTrustedProxy(options.trustedProxy);
   const db = openDatabase({ dataDir, seedFile });
   const mediaDir = join(dataDir, "media");
   mkdirSync(mediaDir, { recursive: true, mode: 0o700 });
   const app = express();
   app.disable("x-powered-by");
+  if (trustedProxies.length) app.set("trust proxy", trustedProxies);
   const attempts = new Map();
   const cookieOptions = {
     httpOnly: true,

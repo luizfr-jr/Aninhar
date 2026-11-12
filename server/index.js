@@ -11,6 +11,7 @@ const { app, close, configured } = createApp({
   password: process.env.ADMIN_PASSWORD,
   sessionSecret: process.env.SESSION_SECRET,
   appOrigin: process.env.APP_ORIGIN,
+  trustedProxy: process.env.TRUST_PROXY,
   production: process.env.NODE_ENV === "production",
   staticDir: resolve(root, "dist"),
 });
