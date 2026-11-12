@@ -236,7 +236,7 @@ function PublicApp() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${route.page === "home" ? " is-home" : ""}`}>
       <a
         className="skip-link"
         href="#main-content"

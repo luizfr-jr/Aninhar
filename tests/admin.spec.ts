@@ -17,6 +17,14 @@ async function noOverflow(page: Page) {
   ).toBeLessThanOrEqual(page.viewportSize()!.width + 1);
 }
 
+test("dashboard editing tasks appear in the first phone viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await login(page);
+  await expect(page.getByRole("link", { name: "Editar temas", exact: true })).toBeInViewport({ ratio: 1 });
+  await expect(page.getByRole("link", { name: "Adicionar imagens", exact: true })).toBeInViewport({ ratio: 1 });
+  await noOverflow(page);
+});
+
 test("admin screens are readable, accessible, responsive and support keyboard navigation", async ({
   page,
 }) => {
